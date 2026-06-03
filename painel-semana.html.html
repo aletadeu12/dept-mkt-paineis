@@ -1,0 +1,573 @@
+<!DOCTYPE html><script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Adfly Painel Semana",
+  "schemaVersion": 1,
+  "description": "Painel da Semana — grade editorial, roteiros, legendas e EDL das 3 empresas (ADFly + AleChef + BPMF) para a semana em curso."
+}
+</script>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel da Semana — 08-14/06/2026</title>
+<style>
+:root { color-scheme: light; --adfly: #0066CC; --adfly-bg: #EBF5FB; --chef: #E67E22; --chef-bg: #FEF9E7; --bpmf: #27AE60; --bpmf-bg: #EAFAF1; --dark: #1A1A2E; --gray: #6B7280; --light: #F8F9FA; --border: #E5E7EB; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, Arial, sans-serif; background: #F0F2F5; color: #1F2937; font-size: 14px; }
+.topbar { background: var(--dark); color: white; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap:wrap; gap:8px; }
+.topbar h1 { font-size: 15px; font-weight: 700; letter-spacing: .5px; }
+.topbar .badge { background: #16A085; color: white; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+.tabs { display: flex; background: white; border-bottom: 2px solid var(--border); padding: 0 20px; gap: 4px; overflow-x:auto; }
+.tab { padding: 10px 18px; font-size: 13px; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; color: var(--gray); transition: all .2s; white-space: nowrap; }
+.tab.active { color: var(--dark); border-bottom-color: var(--dark); }
+.tab.adfly.active { color: var(--adfly); border-bottom-color: var(--adfly); }
+.tab.chef.active { color: var(--chef); border-bottom-color: var(--chef); }
+.tab.bpmf.active { color: var(--bpmf); border-bottom-color: var(--bpmf); }
+.tab:hover { color: #374151; background: #F9FAFB; }
+.page { display: none; padding: 20px; max-width: 1100px; margin: 0 auto; }
+.page.active { display: block; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+.card { background: white; border-radius: 10px; padding: 16px; border: 1px solid var(--border); }
+.card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.card-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--gray); }
+.stat { font-size: 26px; font-weight: 800; line-height: 1; margin-bottom: 2px; }
+.stat-label { font-size: 11px; color: var(--gray); }
+.section-title { font-size: 13px; font-weight: 700; color: var(--dark); margin: 20px 0 10px; display: flex; align-items: center; gap: 8px; }
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.content-card { background: white; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px; overflow: hidden; }
+.content-header { padding: 12px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); flex-wrap:wrap; }
+.content-header .day { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 20px; flex-shrink: 0; }
+.content-header .title { font-weight: 700; font-size: 13px; flex: 1; }
+.content-header .format { font-size: 11px; color: var(--gray); background: var(--light); padding: 3px 8px; border-radius: 20px; white-space:nowrap; }
+.content-body { padding: 12px 16px; font-size: 13px; line-height: 1.6; color: #374151; }
+.content-body .label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--gray); margin-top: 8px; margin-bottom: 3px; }
+.gancho { background: #FFF7ED; border-left: 3px solid #F59E0B; padding: 8px 12px; border-radius: 0 6px 6px 0; font-style: italic; margin: 6px 0; font-size: 13px; }
+.legenda { background: #F0FDF4; border-left: 3px solid #22C55E; padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 12px; margin: 6px 0; }
+.cta { background: #EFF6FF; border-left: 3px solid #3B82F6; padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 12px; margin: 6px 0; }
+.edl { background: #F5F3FF; border-left: 3px solid #8B5CF6; padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 12px; margin: 6px 0; }
+.badge-pill { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+.overviewrow { display: grid; grid-template-columns: 120px repeat(3, 1fr); gap: 1px; background: var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
+.overviewcell { background: white; padding: 10px 14px; font-size: 12px; }
+.overviewcell.header { background: var(--dark); color: white; font-weight: 700; font-size: 11px; text-transform: uppercase; }
+.overviewcell.dayname { background: var(--light); font-weight: 700; color: var(--dark); font-size: 11px; }
+.chip { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; margin: 2px; }
+.files-bar { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; }
+.files-bar-title { font-size: 12px; font-weight: 700; color: var(--dark); margin-bottom: 10px; display:flex; align-items:center; gap:6px; }
+.files-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 8px; }
+.path-row { display: flex; align-items: center; gap: 8px; background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 6px; padding: 7px 10px; }
+.path-icon { font-size: 15px; flex-shrink: 0; }
+.path-info { flex: 1; min-width: 0; }
+.path-name { font-size: 12px; font-weight: 600; color: #1F2937; }
+.path-txt { font-family: monospace; font-size: 10px; color: #64748B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.copy-btn { flex-shrink: 0; padding: 4px 10px; background: #1E3A5F; color: white; border: none; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; transition: background .2s; }
+.copy-btn:hover { background: #2563EB; }
+.copy-btn.ok { background: #16A085; }
+#toast { position: fixed; bottom: 16px; right: 16px; background: #16A085; color: white; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 999; }
+#toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div id="toast">✓ Caminho copiado!</div>
+
+<div class="topbar">
+  <h1>📅 PAINEL DA SEMANA — 08 a 14 de Junho 2026</h1>
+  <span class="badge">11 conteúdos · 3 empresas</span>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showPage('overview',this)">Visão Geral</div>
+  <div class="tab adfly" onclick="showPage('adfly',this)">🛩 ADFly</div>
+  <div class="tab chef" onclick="showPage('chef',this)">🍳 AleChef</div>
+  <div class="tab bpmf" onclick="showPage('bpmf',this)">🚴 BPMF</div>
+  <div class="tab" onclick="showPage('arquivos',this)">📂 Arquivos</div>
+</div>
+
+<!-- OVERVIEW -->
+<div id="page-overview" class="page active">
+
+  <div class="files-bar">
+    <div class="files-bar-title">📂 Arquivos da Semana — clique Copiar → Win+R → cole → Enter</div>
+    <div class="files-grid">
+      <div class="path-row">
+        <span class="path-icon">📄</span>
+        <div class="path-info">
+          <div class="path-name">Pacote ADFly v1.0</div>
+          <div class="path-txt">Semana 08-06-2026-14-06-2026\Pacote da Semana 08-06-2026-14-06-2026 - ADFly v1.0.docx</div>
+        </div>
+        <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 08-06-2026-14-06-2026\\Pacote da Semana 08-06-2026-14-06-2026 - ADFly v1.0.docx',this)">Copiar</button>
+      </div>
+      <div class="path-row">
+        <span class="path-icon">📄</span>
+        <div class="path-info">
+          <div class="path-name">Pacote AleChef v1.0</div>
+          <div class="path-txt">Semana 08-06-2026-14-06-2026\Pacote da Semana 08-06-2026-14-06-2026 - AleChef v1.0.docx</div>
+        </div>
+        <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 08-06-2026-14-06-2026\\Pacote da Semana 08-06-2026-14-06-2026 - AleChef v1.0.docx',this)">Copiar</button>
+      </div>
+      <div class="path-row">
+        <span class="path-icon">📄</span>
+        <div class="path-info">
+          <div class="path-name">Pacote BPMF v1.0</div>
+          <div class="path-txt">Semana 08-06-2026-14-06-2026\Pacote da Semana 08-06-2026-14-06-2026 - BPMF v1.0.docx</div>
+        </div>
+        <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 08-06-2026-14-06-2026\\Pacote da Semana 08-06-2026-14-06-2026 - BPMF v1.0.docx',this)">Copiar</button>
+      </div>
+      <div class="path-row">
+        <span class="path-icon">🖼️</span>
+        <div class="path-info">
+          <div class="path-name">Imagens ADFly</div>
+          <div class="path-txt">Semana 08-06-2026-14-06-2026\imagens\carrossel-segunda-adfly</div>
+        </div>
+        <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 08-06-2026-14-06-2026\\imagens\\carrossel-segunda-adfly',this)">Copiar</button>
+      </div>
+      <div class="path-row">
+        <span class="path-icon">🖼️</span>
+        <div class="path-info">
+          <div class="path-name">Imagens AleChef</div>
+          <div class="path-txt">Semana 08-06-2026-14-06-2026\imagens\carrossel-alechef</div>
+        </div>
+        <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 08-06-2026-14-06-2026\\imagens\\carrossel-alechef',this)">Copiar</button>
+      </div>
+      <div class="path-row">
+        <span class="path-icon">🖼️</span>
+        <div class="path-info">
+          <div class="path-name">Imagens BPMF</div>
+          <div class="path-txt">Semana 08-06-2026-14-06-2026\imagens\carrossel-bpmf</div>
+        </div>
+        <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 08-06-2026-14-06-2026\\imagens\\carrossel-bpmf',this)">Copiar</button>
+      </div>
+      <div class="path-row">
+        <span class="path-icon">📁</span>
+        <div class="path-info">
+          <div class="path-name">Pasta raiz da semana</div>
+          <div class="path-txt">Projeto Área de MKT\Semana 08-06-2026-14-06-2026</div>
+        </div>
+        <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 08-06-2026-14-06-2026',this)">Copiar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Semana 08-14/06 · Snapshot das 3 Empresas</div>
+  <div class="grid3">
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:var(--adfly)"></div><span class="card-title">ADFly Soluções Aéreas</span></div>
+      <div class="stat" style="color:var(--adfly)">4</div>
+      <div class="stat-label">conteúdos na semana</div>
+      <div style="margin-top:10px;font-size:12px;color:var(--gray)">IG + LinkedIn + TikTok · Carrossel + Reel + Post</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:var(--chef)"></div><span class="card-title">AleChefemCasa</span></div>
+      <div class="stat" style="color:var(--chef)">4</div>
+      <div class="stat-label">conteúdos na semana</div>
+      <div style="margin-top:10px;font-size:12px;color:var(--gray)">IG + TikTok · Post + Reel + Story</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:var(--bpmf)"></div><span class="card-title">BPMF — Bora Pedalar</span></div>
+      <div class="stat" style="color:var(--bpmf)">3</div>
+      <div class="stat-label">conteúdos na semana</div>
+      <div style="margin-top:10px;font-size:12px;color:var(--gray)">IG + TikTok · Motivacional + Carrossel + Comunidade</div>
+    </div>
+  </div>
+
+  <div class="section-title">Grade Consolidada — Semana 08-14/06/2026</div>
+  <div class="overviewrow">
+    <div class="overviewcell header">DIA</div>
+    <div class="overviewcell header" style="background:#0066CC">🛩 ADFly</div>
+    <div class="overviewcell header" style="background:#E67E22">🍳 AleChef</div>
+    <div class="overviewcell header" style="background:#27AE60">🚴 BPMF</div>
+
+    <div class="overviewcell dayname">SEG 08/06</div>
+    <div class="overviewcell"><span class="chip" style="background:#EBF5FB;color:#0066CC">Carrossel</span><br><strong>Mapeamento 3D: como construtoras economizam</strong><br><small>IG + LinkedIn · 9h</small></div>
+    <div class="overviewcell"><span class="chip" style="background:#FEF9E7;color:#E67E22">Post + Story</span><br><strong>Cardápio semana 2: marmitas + novidades</strong><br><small>IG · 7h30</small></div>
+    <div class="overviewcell"><span class="chip" style="background:#EAFAF1;color:#27AE60">Post frase</span><br><strong>Domingo você foi pedalar. Segunda já planeja o próximo.</strong><br><small>IG · 7h</small></div>
+
+    <div class="overviewcell dayname">TER 09/06</div>
+    <div class="overviewcell" style="background:#F8F9FA;color:#9CA3AF;font-size:11px">—</div>
+    <div class="overviewcell"><span class="chip" style="background:#FEF9E7;color:#E67E22">Reel 45s</span><br><strong>Bastidor: preparação de evento para 20 pessoas</strong><br><small>IG + TikTok · 18h</small></div>
+    <div class="overviewcell" style="background:#F8F9FA;color:#9CA3AF;font-size:11px">—</div>
+
+    <div class="overviewcell dayname">QUA 10/06</div>
+    <div class="overviewcell"><span class="chip" style="background:#EBF5FB;color:#0066CC">Reel 60s</span><br><strong>Quanto custa NÃO inspecionar?</strong><br><small>IG + TikTok · 18h</small></div>
+    <div class="overviewcell"><span class="chip" style="background:#FEF9E7;color:#E67E22">TikTok/Reel 30s</span><br><strong>Segredo do meu arroz</strong><br><small>TikTok + IG · 19h</small></div>
+    <div class="overviewcell"><span class="chip" style="background:#EAFAF1;color:#27AE60">Carrossel</span><br><strong>O que vai na bolsa de uma jornada de 80km</strong><br><small>IG · 12h</small></div>
+
+    <div class="overviewcell dayname">QUI 11/06</div>
+    <div class="overviewcell"><span class="chip" style="background:#EBF5FB;color:#0066CC">Post vídeo</span><br><strong>Imobiliária + Drone: vídeo aéreo aumenta interesse 40%</strong><br><small>IG + LinkedIn · 12h</small></div>
+    <div class="overviewcell"><span class="chip" style="background:#FEF9E7;color:#E67E22">Post imagem</span><br><strong>Depoimento: noite inesquecível em família</strong><br><small>IG · 12h</small></div>
+    <div class="overviewcell" style="background:#F8F9FA;color:#9CA3AF;font-size:11px">—</div>
+
+    <div class="overviewcell dayname">SEX 12/06</div>
+    <div class="overviewcell"><span class="chip" style="background:#EBF5FB;color:#0066CC">Post técnico</span><br><strong>Termografia: identificar infiltrações na cobertura</strong><br><small>IG + LinkedIn · 8h</small></div>
+    <div class="overviewcell" style="background:#F8F9FA;color:#9CA3AF;font-size:11px">—</div>
+    <div class="overviewcell"><span class="chip" style="background:#EAFAF1;color:#27AE60">Carrossel longo</span><br><strong>História de membro: transformação real</strong><br><small>IG · 8h</small></div>
+
+    <div class="overviewcell dayname">SÁB–DOM</div>
+    <div class="overviewcell" style="background:#F8F9FA;color:#9CA3AF;font-size:11px">Monitorar engajamento</div>
+    <div class="overviewcell" style="background:#F8F9FA;color:#9CA3AF;font-size:11px">Monitorar pedidos</div>
+    <div class="overviewcell" style="background:#F8F9FA;color:#9CA3AF;font-size:11px">WhatsApp grupo BPMF</div>
+  </div>
+</div>
+
+<!-- ADFLY -->
+<div id="page-adfly" class="page">
+  <div class="section-title">🛩 ADFly — 4 Conteúdos · Semana 08-14/06/2026</div>
+  <div style="background:#EBF5FB;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#0066CC;font-weight:600;">
+    Hierarquia: Técnico 50% / Educação 30% / Criativo 20% · Tom: técnico, premium, dados concretos, B2B
+  </div>
+
+  <div class="content-card">
+    <div class="content-header">
+      <span class="day" style="background:#EBF5FB;color:#0066CC">SEG 08/06 · 9h</span>
+      <span class="title">Mapeamento 3D: como construtoras economizam com drone</span>
+      <span class="format">Carrossel 5 slides · IG + LinkedIn</span>
+      <span class="badge-pill" style="background:#EBF5FB;color:#0066CC">Técnico</span>
+    </div>
+    <div class="content-body">
+      <div class="label">Roteiro</div>
+      <div class="gancho">Slide 1: "Mapeamento 3D com drone: o que a engenharia moderna já usa — e você ainda não."</div>
+      <p>Slide 2: Problema — levantamento topográfico tradicional demora dias, equipe em campo, erros humanos.<br>
+      Slide 3: Solução ADFly — voo de 30 min cobre até 50 ha com precisão centimétrica (RTK/GNSS).<br>
+      Slide 4: Dados — 40% de redução no tempo de levantamento. Relatório 3D em 48h.<br>
+      Slide 5: "Sua construtora ainda usa o método antigo? Solicite uma demonstração gratuita."</p>
+      <div class="label">Legenda pronta</div>
+      <div class="legenda">Mapeamento 3D com drone: o que construtoras inteligentes já fazem. Levantamento topográfico tradicional demora dias. Com a ADFly, fazemos em 30 minutos — com precisão centimétrica, relatório 3D e 40% de redução de custos. Solicite uma demonstração. Link na bio. #mapeamento3D #droneengenharia #topografia #ADFly</div>
+      <div class="label">CTA</div>
+      <div class="cta">→ Solicite demonstração (link na bio)</div>
+      <div class="label">EDL / Produção</div>
+      <div class="edl">Fundo #0A0A0A · Azul neon #00D4FF · Brand Kit Canva: kAHKVvRIkBA · Logo ADFly slide 1 · Slide 5: caixa azul neon com CTA</div>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-header">
+      <span class="day" style="background:#EBF5FB;color:#0066CC">QUA 10/06 · 18h</span>
+      <span class="title">Quanto custa NÃO inspecionar? Os números reais</span>
+      <span class="format">Reel 60s · IG + TikTok</span>
+      <span class="badge-pill" style="background:#DBEAFE;color:#1D4ED8">Educação</span>
+    </div>
+    <div class="content-body">
+      <div class="label">Roteiro</div>
+      <div class="gancho">[0-5s] "Você sabe quanto custa uma obra corretiva em condomínio? 5x mais que uma preventiva."</div>
+      <p>[6-20s] Contexto: NBR 5.674 exige inspeção de fachada a cada 3 anos. 80% dos condomínios não cumprem.<br>
+      [21-40s] Solução: drone ADFly faz inspeção completa em 30 minutos. Sem andaimes. Sem interdição. Laudo em 48h.<br>
+      [41-55s] Caso real: condomínio em SP identificou infiltração antes de virar estrutural. Economia: R$ 80k.<br>
+      [56-60s] "Você já passou por obra corretiva cara? Comenta aqui. Salva pro seu síndico."</p>
+      <div class="label">Legenda pronta</div>
+      <div class="legenda">Obra corretiva custa 5x mais do que uma inspeção preventiva. A NBR 5.674 exige inspeção de fachada a cada 3 anos. Com drone, fazemos em 30 minutos. Sem andaimes. Sem risco. Com laudo técnico. Você já passou por uma obra corretiva cara? Comenta aqui 👇 #síndico #condomínio #NBR5674 #ADFly</div>
+      <div class="label">CTA</div>
+      <div class="cta">→ Comenta: você já passou por isso?</div>
+      <div class="label">EDL / Produção</div>
+      <div class="edl">Narração em off, tom sério e especialista · Imagens: fachada drone, tela relatório, antes/depois · Corte a cada 5-8s · Fechar: tela preta + logo + CTA</div>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-header">
+      <span class="day" style="background:#EBF5FB;color:#0066CC">QUI 11/06 · 12h</span>
+      <span class="title">Imobiliária + Drone: vídeo aéreo aumenta interesse em 40%</span>
+      <span class="format">Post imagem/vídeo · IG + LinkedIn</span>
+      <span class="badge-pill" style="background:#F0FDF4;color:#15803D">Criativo</span>
+    </div>
+    <div class="content-body">
+      <div class="label">Roteiro</div>
+      <div class="gancho">"O comprador não vê o imóvel. Ele vê o contexto. Vista aérea, entorno, acessos — tudo em 60 segundos."</div>
+      <p>Visual principal: imagem aérea premium de empreendimento · Dado de ancoragem: vídeos aéreos aumentam interesse em 40% · CTA: "Seu próximo lançamento merece essa visão."</p>
+      <div class="label">Legenda pronta</div>
+      <div class="legenda">O comprador não compra um apartamento. Ele compra uma experiência de vida. Mostrar o entorno, a vista, os acessos — isso é o que converte. Anúncios com tour aéreo têm até 40% mais interesse. Solicite o seu. Link na bio. #imobiliário #droneimóveis #touraerio #ADFly</div>
+      <div class="label">CTA</div>
+      <div class="cta">→ Solicite seu tour aéreo</div>
+      <div class="label">EDL / Produção</div>
+      <div class="edl">Footage aéreo real do portfólio ADFly · Slow motion + música premium, sem voz · Overlay texto elegante branco/neon · 1:1 para IG, 16:9 para LinkedIn</div>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-header">
+      <span class="day" style="background:#EBF5FB;color:#0066CC">SEX 12/06 · 8h</span>
+      <span class="title">Inspeção de cobertura: identificar infiltrações com termografia</span>
+      <span class="format">Post técnico · IG + LinkedIn</span>
+      <span class="badge-pill" style="background:#EBF5FB;color:#0066CC">Técnico</span>
+    </div>
+    <div class="content-body">
+      <div class="label">Roteiro</div>
+      <div class="gancho">"Você consegue ver uma infiltração antes de ela aparecer na parede?"</div>
+      <p>Slide 2: Câmera infravermelha detecta variação de temperatura = umidade oculta.<br>
+      Slide 3: 200m² inspecionados em 15 min. 3 pontos de infiltração identificados antes de virar obra.<br>
+      Slide 4: 100% legal — ANAC + DECEA + SARPAS. Laudo técnico. Agende.</p>
+      <div class="label">Legenda pronta</div>
+      <div class="legenda">Infiltração que você não vê ainda vai te custar caro. A câmera termográfica do drone detecta umidade oculta antes de virar problema estrutural. ✅ 200m² em 15 minutos ✅ Laudo técnico ✅ 100% legal — ANAC + DECEA + SARPAS. Agende. Link na bio. #termografia #infiltração #ADFly</div>
+      <div class="label">CTA</div>
+      <div class="cta">→ Agende sua inspeção</div>
+      <div class="label">EDL / Produção</div>
+      <div class="edl">Imagem termográfica real com gradiente calor visível · Paleta: preto + azul neon + gradiente laranja (mapa calor) · Publicar sexta 8h (profissionais início do dia)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ALECHEF -->
+<div id="page-chef" class="page">
+  <div class="section-title">🍳 AleChef — 4 Conteúdos · Semana 08-14/06/2026</div>
+  <div style="background:#FEF9E7;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#E67E22;font-weight:600;">
+    Pilares: Cardápio / Bastidor / Chef em Casa / Eventos / Dicas · Tom: humano, quente, sensorial, comida de verdade
+  </div>
+
+  <div class="content-card">
+    <div class="content-header">
+      <span class="day" style="background:#FEF9E7;color:#E67E22">SEG 08/06 · 7h30</span>
+      <span class="title">Cardápio da semana 2: marmitas + novidades</span>
+      <span class="format">Post IG + Story · IG</span>
+      <span class="badge-pill" style="background:#FEF9E7;color:#E67E22">Cardápio</span>
+    </div>
+    <div class="content-body">
+      <div class="label">Roteiro</div>
+      <div class="gancho">Foto bonita das marmitas da semana + "Cardápio da semana chegou! Marmitas gourmet para o seu dia a dia."</div>
+      <p>Listar 3-5 opções com destaque (Frango ao alho-pouro, Salmão com legumes, Risoto de cogumelos, Marmita fitness).<br>
+      Informar como pedir: WhatsApp / link na bio.<br>
+      Story: enquete — qual você vai pedir essa semana?</p>
+      <div class="label">Legenda pronta</div>
+      <div class="legenda">O cardápio da semana chegou! Comida de verdade, preparada com carinho. Frango ao alho-pouro. Salmão com legumes. Risoto de cogumelos. Marmita fitness. Escolha a sua. Link na bio para pedir. #alechef #marmitasaudavel #personalchef #comidadeverdade</div>
+      <div class="label">CTA</div>
+      <div class="cta">→ Peça já (link na bio)</div>
+      <div class="label">EDL / Produção</div>
+      <div class="edl">Fundo teal escuro (#1A2223) · Marmitas abertas em destaque, luz natural lateral · Story: enquete 2 opções · Brand Kit: kAD_heXBN0c</div>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-header">
+      <span class="day" style="background:#FEF9E7;color:#E67E22">TER 09/06 · 18h</span>
+      <span class="title">Bastidor: preparação de evento exclusivo para 20 pessoas</span>
+      <span class="format">Reel 45s · IG + TikTok</span>
+      <span class="badge-pill" style="background:#FEF9E7;color:#E67E22">Bastidor</span>
+    </div>
+    <div class="content-body">
+      <div class="label">Roteiro</div>
+      <div class="gancho">[0-5s] Hook visual: cozinha em preparação, facas, ervas, aroma</div>
+      <p>[6-20s] Processo: mise en place, cortes, marinada — cada detalhe conta.<br>
+      [21-35s] Montagem dos pratos: plating cuidadoso, cores, texturas.<br>
+      [36-45s] Mesa posta, clientes chegando, primeiros sorrisos.<br>
+      Trilha: instrumental elegante, apenas som da cozinha.</p>
+      <div class="label">Legenda pronta</div>
+      <div class="legenda">Bastidor de um evento para 20 pessoas. Cada detalhe preparado com cuidado — dos cortes à montagem dos pratos. Isso é o que entrego quando você me convida para a sua casa. Salva para quando quiser criar uma noite inesquecível. #alechef #personalchef #bastidor #eventogastronomico</div>
+      <div class="label">CTA</div>
+      <div class="cta">→ Salva para se inspirar</div>
+      <div class="label">EDL / Produção</div>
+      <div class="edl">Cortes rápidos: mise en place, chamas, vapor, plating · Sem narração — som ambiente cozinha + trilha suave · Iluminação quente tons ouro/marrom · Finalizar com frame prato montado + logo</div>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-header">
+      <span class="day" style="background:#FEF9E7;color:#E67E22">QUA 10/06 · 19h</span>
+      <span class="title">Segredo do meu arroz que todo mundo pede a receita</span>
+      <span class="format">TikTok/Reel 30s · TikTok + IG</span>
+      <span class="badge-pill" style="background:#FEF9E7;color:#E67E22">Dicas</span>
+    </div>
+    <div class="content-body">
+      <div class="label">Roteiro</div>
+      <div class="gancho">[0-3s] "O arroz mais pedido por todos os meus clientes. Em 30 segundos você aprende."</div>
+      <p>[4-15s] Técnica: refogar alho dourado em azeite, tostar o arroz seco, água fervente, sal e folha de louro.<br>
+      [16-25s] Segredo: tampar por exato 12 minutos, sem mexer, fogo médio-baixo.<br>
+      [26-30s] Resultado: arroz soltinho, perfumado — provar a colherada.</p>
+      <div class="label">Legenda pronta</div>
+      <div class="legenda">O arroz que todo cliente pede a receita. Não é mágica — é técnica. Alho dourado em azeite. Arroz tostado seco. Água fervente. 12 minutos tampado. Simples assim. Salva esse vídeo antes de sair. #alechef #receita #dicasdechef #arrozsoltinho</div>
+      <div class="label">CTA</div>
+      <div class="cta">→ Salva antes de sair</div>
+      <div class="label">EDL / Produção</div>
+      <div class="edl">Vertical 9:16 · Texto na tela em cada etapa · Som: crepitar do alho no óleo · Encerrar com colherada do arroz em close</div>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-header">
+      <span class="day" style="background:#FEF9E7;color:#E67E22">QUI 11/06 · 12h</span>
+      <span class="title">Depoimento de cliente: uma noite inesquecível em família</span>
+      <span class="format">Post imagem + texto · IG</span>
+      <span class="badge-pill" style="background:#FEF9E7;color:#E67E22">Chef em Casa</span>
+    </div>
+    <div class="content-body">
+      <div class="label">Roteiro</div>
+      <div class="gancho">"Quando o Alexandre chegou, a gente nem imaginou que a noite ia ser assim…"</div>
+      <p>Foto da mesa posta ou chef em ação na casa do cliente (com permissão).<br>
+      Contar a história: aniversário de casamento / surpresa / reunião de amigos.<br>
+      Detalhe: um prato especial que marcou a noite.<br>
+      CTA: "Você também merece uma noite assim."</p>
+      <div class="label">Legenda pronta</div>
+      <div class="legenda">Uma noite em família que ninguém vai esquecer. Do menu personalizado ao último detalhe da mesa — tudo pensado para você. Quer ter uma noite assim? Link na bio para agendar. #alechef #personalchef #chefemcasa #experienciagastronomica</div>
+      <div class="label">CTA</div>
+      <div class="cta">→ Agende sua noite</div>
+      <div class="label">EDL / Produção</div>
+      <div class="edl">Foto real de atendimento (obter autorização) · Tom quente, emocional — contar história, não vender · Alternativamente: arte com citação anônima + foto de mesa posta</div>
+    </div>
+  </div>
+</div>
+
+<!-- BPMF -->
+<div id="page-bpmf" class="page">
+  <div class="section-title">🚴 BPMF — 3 Conteúdos · Semana 08-14/06/2026</div>
+  <div style="background:#EAFAF1;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#27AE60;font-weight:600;">
+    Foco junho/julho: CTA Jornada Julho · Tom: inspirador, aventureiro, comunidade acima de produto
+  </div>
+
+  <div class="content-card">
+    <div class="content-header">
+      <span class="day" style="background:#EAFAF1;color:#27AE60">SEG 08/06 · 7h</span>
+      <span class="title">Domingo você foi pedalar. Segunda já planeja o próximo.</span>
+      <span class="format">Post frase + foto · IG</span>
+      <span class="badge-pill" style="background:#EAFAF1;color:#27AE60">Motivacional</span>
+    </div>
+    <div class="content-body">
+      <div class="label">Roteiro</div>
+      <div class="gancho">"Domingo você foi pedalar. Segunda você já está planejando o próximo."</div>
+      <p>Imagem: foto de estrada, pôr do sol, ciclista na paisagem — inspiradora.<br>
+      Texto de apoio: "É assim que a comunidade BPMF funciona. Um pedal sempre leva ao próximo."<br>
+      CTA: comentário — onde você vai pedalar essa semana?</p>
+      <div class="label">Legenda pronta</div>
+      <div class="legenda">Domingo você foi pedalar. Segunda você já está planejando o próximo. É assim que funciona a mente de quem descobriu o que é uma jornada de verdade. Conta pra mim: onde você vai essa semana? #BPMF #ciclismo #cicloturismo #comunidade</div>
+      <div class="label">CTA</div>
+      <div class="cta">→ Conta pra mim: onde vai na semana que vem?</div>
+      <div class="label">EDL / Produção</div>
+      <div class="edl">Fundo preto (#050505) ou foto cinematica de estrada ao amanhecer · Frase em branco itálico, destaque verde neon (#39FF14) na palavra-chave · Brand Kit: kAHKy65lfHo</div>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-header">
+      <span class="day" style="background:#EAFAF1;color:#27AE60">QUA 10/06 · 12h</span>
+      <span class="title">O que vai na bolsa de uma jornada de 80km</span>
+      <span class="format">Carrossel · IG</span>
+      <span class="badge-pill" style="background:#EAFAF1;color:#27AE60">Experiência</span>
+    </div>
+    <div class="content-body">
+      <div class="label">Roteiro</div>
+      <div class="gancho">Slide 1: "Jornada de 80km. O que vai na minha bolsa — e o que não pode faltar."</div>
+      <p>Slide 2: Hidratação — 2L de água + isotônicos (a conta por hora).<br>
+      Slide 3: Nutrição — gel de energia, banana, amendoim — quando e quanto comer.<br>
+      Slide 4: Segurança — câmera de reparo, kit primeiros socorros, celular carregado.<br>
+      Slide 5: Conforto — bermuda com padding, creme anti-atrito, óculos, luvas.<br>
+      Slide 6: "A próxima jornada BPMF tem tudo isso — e a companhia certa. Link na bio."</p>
+      <div class="label">Legenda pronta</div>
+      <div class="legenda">Uma jornada de 80km não é só pedalar. É preparar. Hidratação certa. Nutrição calculada. Kit de segurança. O conforto que faz diferença nos últimos 20km. Salva esse guia. #BPMF #ciclismo #dicas #cicloturismo #jornada80km</div>
+      <div class="label">CTA</div>
+      <div class="cta">→ Salva esse guia</div>
+      <div class="label">EDL / Produção</div>
+      <div class="edl">Flat lay fotográfico: bolsa aberta com itens dispostos · Cada slide = 1 categoria com ícone · Paleta: preto + branco + verde neon · Último slide: CTA com foto de grupo em pedalada</div>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="content-header">
+      <span class="day" style="background:#EAFAF1;color:#27AE60">SEX 12/06 · 8h</span>
+      <span class="title">Comunidade BPMF: história de membro — transformação real</span>
+      <span class="format">Post longo / carrossel · IG</span>
+      <span class="badge-pill" style="background:#EAFAF1;color:#27AE60">Comunidade</span>
+    </div>
+    <div class="content-body">
+      <div class="label">Roteiro</div>
+      <div class="gancho">Slide 1: foto do membro em pedalada + "Eu nunca tinha pedalado mais de 20km. Hoje fiz 80."</div>
+      <p>Slide 2: história — quem é, de onde veio, o que buscava no BPMF.<br>
+      Slide 3: a jornada — primeiro pedal, dificuldades, superação.<br>
+      Slide 4: transformação — física, mental, relações.<br>
+      Slide 5: "Cada membro BPMF tem uma história assim. A sua pode ser a próxima. Jornada Julho: link na bio."</p>
+      <div class="label">Legenda pronta</div>
+      <div class="legenda">Ele nunca tinha pedalado mais de 20km. Hoje, 3 meses depois, completou sua primeira jornada de 80km com a BPMF. Isso não é só sobre bicicleta. É sobre encontrar sua tribo. Você é o próximo? Jornada Julho: link na bio. #BPMF #comunidade #transformacao #JornadaJulho</div>
+      <div class="label">CTA</div>
+      <div class="cta">→ Você é o próximo? (CTA Jornada Julho)</div>
+      <div class="label">EDL / Produção</div>
+      <div class="edl">Depoimento + foto real do membro (com autorização) · Citar pelo nome/apelido · Emoção acima de dados · CTA forte para Jornada Julho</div>
+    </div>
+  </div>
+</div>
+
+<!-- ARQUIVOS -->
+<div id="page-arquivos" class="page">
+  <div class="section-title">📂 Todos os Arquivos da Semana</div>
+  <div class="files-bar">
+    <div class="files-bar-title">📁 Caminhos completos — clique Copiar e cole no Explorer (Win+R) ou Finder</div>
+    <div class="files-grid">
+      <div class="path-row">
+        <span class="path-icon">📄</span>
+        <div class="path-info">
+          <div class="path-name">Pacote ADFly v1.0</div>
+          <div class="path-txt">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\Semana 08-06-2026-14-06-2026\Pacote da Semana 08-06-2026-14-06-2026 - ADFly v1.0.docx</div>
+        </div>
+        <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 08-06-2026-14-06-2026\\Pacote da Semana 08-06-2026-14-06-2026 - ADFly v1.0.docx',this)">Copiar</button>
+      </div>
+      <div class="path-row">
+        <span class="path-icon">📄</span>
+        <div class="path-info">
+          <div class="path-name">Pacote AleChef v1.0</div>
+          <div class="path-txt">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\Semana 08-06-2026-14-06-2026\Pacote da Semana 08-06-2026-14-06-2026 - AleChef v1.0.docx</div>
+        </div>
+        <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 08-06-2026-14-06-2026\\Pacote da Semana 08-06-2026-14-06-2026 - AleChef v1.0.docx',this)">Copiar</button>
+      </div>
+      <div class="path-row">
+        <span class="path-icon">📄</span>
+        <div class="path-info">
+          <div class="path-name">Pacote BPMF v1.0</div>
+          <div class="path-txt">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\Semana 08-06-2026-14-06-2026\Pacote da Semana 08-06-2026-14-06-2026 - BPMF v1.0.docx</div>
+        </div>
+        <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 08-06-2026-14-06-2026\\Pacote da Semana 08-06-2026-14-06-2026 - BPMF v1.0.docx',this)">Copiar</button>
+      </div>
+      <div class="path-row">
+        <span class="path-icon">🖼️</span>
+        <div class="path-info">
+          <div class="path-name">Carrossel ADFly (segunda)</div>
+          <div class="path-txt">C:\...\Semana 08-06-2026-14-06-2026\imagens\carrossel-segunda-adfly</div>
+        </div>
+        <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 08-06-2026-14-06-2026\\imagens\\carrossel-segunda-adfly',this)">Copiar</button>
+      </div>
+      <div class="path-row">
+        <span class="path-icon">🖼️</span>
+        <div class="path-info">
+          <div class="path-name">Carrossel AleChef</div>
+          <div class="path-txt">C:\...\Semana 08-06-2026-14-06-2026\imagens\carrossel-alechef</div>
+        </div>
+        <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 08-06-2026-14-06-2026\\imagens\\carrossel-alechef',this)">Copiar</button>
+      </div>
+      <div class="path-row">
+        <span class="path-icon">🖼️</span>
+        <div class="path-info">
+          <div class="path-name">Carrossel BPMF</div>
+          <div class="path-txt">C:\...\Semana 08-06-2026-14-06-2026\imagens\carrossel-bpmf</div>
+        </div>
+        <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 08-06-2026-14-06-2026\\imagens\\carrossel-bpmf',this)">Copiar</button>
+      </div>
+      <div class="path-row">
+        <span class="path-icon">🎬</span>
+        <div class="path-info">
+          <div class="path-name">Pasta Reels</div>
+          <div class="path-txt">C:\...\Semana 08-06-2026-14-06-2026\imagens\reels</div>
+        </div>
+        <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 08-06-2026-14-06-2026\\imagens\\reels',this)">Copiar</button>
+      </div>
+      <div class="path-row">
+        <span class="path-icon">📁</span>
+        <div class="path-info">
+          <div class="path-name">Pasta raiz da semana</div>
+          <div class="path-txt">C:\...\Projeto Área de MKT\Semana 08-06-2026-14-06-2026</div>
+        </div>
+        <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 08-06-2026-14-06-2026',this)">Copiar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showPage(id, tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  tab.classList.add('active');
+}
+function cp(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ OK'; btn.classList.add('ok');
+    const t = document.getElementById('toast'); t.classList.add('show');
+    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('ok'); t.classList.remove('show'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
