@@ -1,0 +1,529 @@
+<!DOCTYPE html><script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Adfly Guia Golive",
+  "schemaVersion": 1,
+  "description": "Guia GO LIVE interativo para o lançamento simultâneo das 3 empresas em 25/05/2026 — checklist com progresso, blocos de tempo, planos B e linha do tempo do D-Day."
+}
+</script>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia GO LIVE — 3 Empresas</title>
+<style>
+:root { color-scheme: light; --adfly:#0066CC; --chef:#E67E22; --bpmf:#27AE60; --dark:#1A1A2E; --border:#E5E7EB; }
+* { box-sizing: border-box; margin:0; padding:0; }
+body { font-family: -apple-system, Arial, sans-serif; background:#F0F2F5; color:#1F2937; font-size:14px; }
+.topbar { background:var(--dark); color:white; padding:12px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+.topbar h1 { font-size:15px; font-weight:700; }
+.progress-bar { background:#E5E7EB; border-radius:20px; height:8px; margin:8px 20px; overflow:hidden; }
+.progress-fill { height:100%; background:linear-gradient(90deg,#16A085,#27AE60); border-radius:20px; transition:width .5s; }
+.main { max-width:1000px; margin:0 auto; padding:20px; }
+
+/* ALERT */
+.alert { background:#FEF3C7; border:1px solid #F59E0B; border-radius:10px; padding:14px 18px; margin-bottom:16px; font-size:13px; }
+.alert-info { background:#EFF6FF; border:1px solid #3B82F6; border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:13px; color:#1E40AF; }
+
+/* PATH BOX */
+.path-box { display:flex; align-items:center; gap:8px; background:#F8FAFC; border:1px solid #CBD5E1; border-radius:6px; padding:6px 10px; margin-top:5px; flex-wrap:wrap; }
+.path-txt { font-family:monospace; font-size:11px; color:#475569; flex:1; min-width:0; word-break:break-all; }
+.copy-btn { flex-shrink:0; padding:3px 10px; background:#1E3A5F; color:white; border:none; border-radius:4px; font-size:11px; font-weight:700; cursor:pointer; transition:background .2s; white-space:nowrap; }
+.copy-btn:hover { background:#2563EB; }
+.copy-btn.ok { background:#16A085; }
+.open-hint { font-size:10px; color:#94A3B8; margin-top:2px; }
+
+/* STATS */
+.stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
+.stat-card { background:white; border-radius:10px; padding:14px; border:1px solid var(--border); text-align:center; }
+.stat-n { font-size:28px; font-weight:800; }
+.stat-l { font-size:11px; color:#6B7280; }
+
+/* SECTION */
+.section { background:white; border-radius:12px; border:1px solid var(--border); margin-bottom:16px; overflow:hidden; }
+.section-head { padding:14px 18px; display:flex; align-items:center; gap:10px; cursor:pointer; user-select:none; }
+.section-head h2 { font-size:14px; font-weight:700; flex:1; }
+.section-head .badge { font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; }
+.section-head .toggle { font-size:18px; transition:transform .3s; color:#9CA3AF; }
+.section-head.open .toggle { transform:rotate(180deg); }
+.section-body { padding:0 18px 16px; display:none; }
+.section-body.open { display:block; }
+
+/* CHECKLIST */
+.checklist-item { display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-bottom:1px solid #F3F4F6; }
+.checklist-item:last-child { border-bottom:none; }
+.check-box { width:22px; height:22px; border:2px solid #D1D5DB; border-radius:6px; flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center; margin-top:1px; transition:all .2s; font-size:13px; font-weight:700; }
+.check-box.done { background:#16A085; border-color:#16A085; color:white; }
+.item-content { flex:1; }
+.item-title { font-size:13px; font-weight:600; line-height:1.4; }
+.item-sub { font-size:11px; color:#6B7280; margin-top:3px; }
+.company-tag { font-size:10px; font-weight:700; padding:2px 7px; border-radius:20px; }
+
+/* TIMELINE */
+.time-line { display:flex; flex-direction:column; gap:0; }
+.time-item { display:flex; gap:14px; }
+.time-dot-col { display:flex; flex-direction:column; align-items:center; width:60px; flex-shrink:0; }
+.time-dot { width:14px; height:14px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+.time-line-v { width:2px; flex:1; background:#E5E7EB; margin:4px auto; }
+.time-content { padding:4px 0 18px; flex:1; }
+.time-label { font-size:11px; color:#6B7280; font-weight:700; }
+.time-title { font-size:13px; font-weight:700; margin-top:2px; }
+.time-desc { font-size:12px; color:#374151; margin-top:4px; line-height:1.5; }
+.plano-b { background:#FEF9E7; border:1px solid #F59E0B; border-radius:6px; padding:6px 10px; font-size:11px; margin-top:6px; }
+
+/* TOAST */
+#toast { position:fixed; bottom:16px; right:16px; background:#16A085; color:white; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:700; opacity:0; transition:opacity .3s; pointer-events:none; z-index:999; }
+#toast.show { opacity:1; }
+</style>
+</head>
+<body>
+<div id="toast">✓ Caminho copiado!</div>
+
+<div class="topbar">
+  <h1>🚀 GUIA GO LIVE — 3 EMPRESAS · Domingo 24/05 + Segunda 25/05</h1>
+  <span style="font-size:12px;color:#9CA3AF" id="progress-label">0 / 21 concluídos</span>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+
+<div class="main">
+
+  <div class="alert-info">ℹ️ <strong>Como abrir os arquivos:</strong> Clique <strong>Copiar</strong> no caminho desejado → pressione <strong>Win + R</strong> → cole → Enter. O arquivo abre direto.</div>
+
+  <div class="alert">⚠️ <strong>Atenção:</strong> Todos os textos prontos (bios, forms, respostas WhatsApp) estão no arquivo <strong>BIOS-FORMS-WHATSAPP-3-empresas-GO-LIVE.md</strong>. Copie o caminho abaixo e abra no editor de texto.</div>
+
+  <!-- ATALHO RÁPIDO: arquivo principal -->
+  <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:16px;">
+    <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">📂 Arquivo principal — Bios + Forms + WhatsApp (copie e abra)</div>
+    <div class="path-box">
+      <span class="path-txt">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\00 - Base Estrategica\BIOS-FORMS-WHATSAPP-3-empresas-GO-LIVE.md</span>
+      <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\00 - Base Estrategica\\BIOS-FORMS-WHATSAPP-3-empresas-GO-LIVE.md',this)">Copiar</button>
+    </div>
+    <div class="open-hint">Win + R → cole → Enter (abre no Bloco de Notas ou VS Code)</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card"><div class="stat-n" style="color:#16A085" id="stat-done">0</div><div class="stat-l">concluídos</div></div>
+    <div class="stat-card"><div class="stat-n" style="color:#F59E0B" id="stat-pend">21</div><div class="stat-l">pendentes</div></div>
+    <div class="stat-card"><div class="stat-n" style="color:var(--dark)">6-8h</div><div class="stat-l">estimativa total</div></div>
+    <div class="stat-card"><div class="stat-n" style="color:#E74C3C">09h00</div><div class="stat-l">GO LIVE segunda</div></div>
+  </div>
+
+  <!-- BLOCO 1 -->
+  <div class="section">
+    <div class="section-head open" onclick="toggleSection(this)">
+      <span>☀️</span><h2>MANHÃ DOMINGO (8h–11h) — Setup Ferramental AleChef + BPMF</h2>
+      <span class="badge" style="background:#EBF5FB;color:#1A5276">~3h</span>
+      <span class="toggle">▾</span>
+    </div>
+    <div class="section-body open">
+
+      <div class="checklist-item" data-id="1">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title"><span class="company-tag" style="background:#FEF9E7;color:#E67E22">AleChef</span> <span class="company-tag" style="background:#EAFAF1;color:#27AE60">BPMF</span> Atualizar bio do Instagram (texto + emoji + link)</div>
+          <div class="item-sub">30 min · Abrir perfil → Editar perfil → Colar texto da bio</div>
+          <div class="path-box" style="margin-top:6px;">
+            <span class="path-txt">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\00 - Base Estrategica\BIOS-FORMS-WHATSAPP-3-empresas-GO-LIVE.md <strong style="color:#2563EB">→ seção "Bios Instagram"</strong></span>
+            <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\00 - Base Estrategica\\BIOS-FORMS-WHATSAPP-3-empresas-GO-LIVE.md',this)">Copiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="checklist-item" data-id="2">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title"><span class="company-tag" style="background:#FEF9E7;color:#E67E22">AleChef</span> <span class="company-tag" style="background:#EAFAF1;color:#27AE60">BPMF</span> Criar bio.link com 4 botões por empresa</div>
+          <div class="item-sub">20 min · AleChef: Cardápio / Chef em Casa / Eventos / WhatsApp · BPMF: Inscrição / Próxima Jornada / Comunidade / WhatsApp</div>
+          <div class="path-box" style="margin-top:6px;">
+            <span class="path-txt">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\00 - Base Estrategica\BIOS-FORMS-WHATSAPP-3-empresas-GO-LIVE.md <strong style="color:#2563EB">→ seção "bio.link"</strong></span>
+            <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\00 - Base Estrategica\\BIOS-FORMS-WHATSAPP-3-empresas-GO-LIVE.md',this)">Copiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="checklist-item" data-id="3">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title"><span class="company-tag" style="background:#FEF9E7;color:#E67E22">AleChef</span> Criar 4 Google Forms (Cardápio / Chef em Casa / Eventos / Feedback)</div>
+          <div class="item-sub">25 min · Copiar perguntas do doc · Salvar link e adicionar no bio.link</div>
+          <div class="path-box" style="margin-top:6px;">
+            <span class="path-txt">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\00 - Base Estrategica\BIOS-FORMS-WHATSAPP-3-empresas-GO-LIVE.md <strong style="color:#2563EB">→ seção "Google Forms AleChef"</strong></span>
+            <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\00 - Base Estrategica\\BIOS-FORMS-WHATSAPP-3-empresas-GO-LIVE.md',this)">Copiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="checklist-item" data-id="4">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title"><span class="company-tag" style="background:#EAFAF1;color:#27AE60">BPMF</span> Criar 4 Google Forms (Inscrição Jornada / Interesse Futuro / Parceria / Feedback)</div>
+          <div class="item-sub">25 min · Copiar perguntas do doc · Salvar link e adicionar no bio.link</div>
+          <div class="path-box" style="margin-top:6px;">
+            <span class="path-txt">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\00 - Base Estrategica\BIOS-FORMS-WHATSAPP-3-empresas-GO-LIVE.md <strong style="color:#2563EB">→ seção "Google Forms BPMF"</strong></span>
+            <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\00 - Base Estrategica\\BIOS-FORMS-WHATSAPP-3-empresas-GO-LIVE.md',this)">Copiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="checklist-item" data-id="5">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title"><span class="company-tag" style="background:#FEF9E7;color:#E67E22">AleChef</span> Configurar WhatsApp Business — 10 respostas rápidas</div>
+          <div class="item-sub">15 min · WhatsApp Business → Configurações → Ferramentas comerciais → Respostas rápidas · Criar cada uma com atalho (/oi, /cardapio etc.)</div>
+          <div class="path-box" style="margin-top:6px;">
+            <span class="path-txt">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\00 - Base Estrategica\BIOS-FORMS-WHATSAPP-3-empresas-GO-LIVE.md <strong style="color:#2563EB">→ seção "4.1 AleChef — 10 respostas rápidas"</strong></span>
+            <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\00 - Base Estrategica\\BIOS-FORMS-WHATSAPP-3-empresas-GO-LIVE.md',this)">Copiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="checklist-item" data-id="6">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title"><span class="company-tag" style="background:#EAFAF1;color:#27AE60">BPMF</span> Configurar WhatsApp Business — 10 respostas rápidas</div>
+          <div class="item-sub">15 min · Mesmo processo · Respostas focadas em jornada + inscrição</div>
+          <div class="path-box" style="margin-top:6px;">
+            <span class="path-txt">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\00 - Base Estrategica\BIOS-FORMS-WHATSAPP-3-empresas-GO-LIVE.md <strong style="color:#2563EB">→ seção "4.2 BPMF — 10 respostas rápidas"</strong></span>
+            <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\00 - Base Estrategica\\BIOS-FORMS-WHATSAPP-3-empresas-GO-LIVE.md',this)">Copiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="checklist-item" data-id="7">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title"><span class="company-tag" style="background:#FEF9E7;color:#E67E22">AleChef</span> <span class="company-tag" style="background:#EAFAF1;color:#27AE60">BPMF</span> Criar CRM planilha (Google Sheets)</div>
+          <div class="item-sub">20 min · Copiar abas do CRM Template ADFly · Adaptar coluna "tipo" para B2C</div>
+          <div class="path-box" style="margin-top:6px;">
+            <span class="path-txt">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\00 - Base Estrategica\CRM Template ADFly v1.0.xlsx</span>
+            <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\00 - Base Estrategica\\CRM Template ADFly v1.0.xlsx',this)">Copiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="checklist-item" data-id="8">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title"><span class="company-tag" style="background:#FEF9E7;color:#E67E22">AleChef</span> <span class="company-tag" style="background:#EAFAF1;color:#27AE60">BPMF</span> Confirmar perfis IG/TikTok/YT criados e ativos</div>
+          <div class="item-sub">15 min · Verificar @handle · Foto de perfil · Pelo menos 1 destaque criado</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BLOCO 2 -->
+  <div class="section">
+    <div class="section-head open" onclick="toggleSection(this)">
+      <span>🎬</span><h2>TARDE DOMINGO (13h–16h) — Produção dos Primeiros Posts</h2>
+      <span class="badge" style="background:#EBF5FB;color:#1A5276">~3h</span>
+      <span class="toggle">▾</span>
+    </div>
+    <div class="section-body open">
+
+      <div class="checklist-item" data-id="9">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title"><span class="company-tag" style="background:#FEF9E7;color:#E67E22">AleChef</span> Filmar Reel bastidor de cozinha (marmita / "quem sou eu")</div>
+          <div class="item-sub">60 min filmagem + 30 min edição · Mise en place → corte → panela → prato finalizado</div>
+          <div class="path-box" style="margin-top:6px;">
+            <span class="path-txt">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\Semana 25-31-05-2026\Pacote da Semana 25-31-05 - AleChef v1.0.docx <strong style="color:#E67E22">→ aba Segunda · Roteiro completo</strong></span>
+            <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 25-31-05-2026\\Pacote da Semana 25-31-05 - AleChef v1.0.docx',this)">Copiar</button>
+          </div>
+          <div class="plano-b">⚠️ Plano B: Carrossel com fotos de pratos já prontos (sem filmar nada)</div>
+        </div>
+      </div>
+
+      <div class="checklist-item" data-id="10">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title"><span class="company-tag" style="background:#EAFAF1;color:#27AE60">BPMF</span> Montar Reel teaser "A Jornada Começa"</div>
+          <div class="item-sub">45 min edição · Usar compilado de fotos/vídeos de pedais anteriores</div>
+          <div class="path-box" style="margin-top:6px;">
+            <span class="path-txt">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\Semana 25-31-05-2026\Pacote da Semana 25-31-05 - BPMF v1.0.docx <strong style="color:#27AE60">→ aba Terça · Roteiro completo</strong></span>
+            <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 25-31-05-2026\\Pacote da Semana 25-31-05 - BPMF v1.0.docx',this)">Copiar</button>
+          </div>
+          <div class="plano-b">⚠️ Plano B: Carrossel com fotos de jornadas anteriores + texto "Quem somos"</div>
+        </div>
+      </div>
+
+      <div class="checklist-item" data-id="11">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title"><span class="company-tag" style="background:#EBF5FB;color:#0066CC">ADFly</span> Revisar / aprovar Carrossel "5 Multas do Síndico" (7 slides prontos)</div>
+          <div class="item-sub">15 min revisão + importar no Canva se precisar ajustar texto/fonte</div>
+          <div class="path-box" style="margin-top:6px;">
+            <span class="path-txt">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\Semana 25-31-05-2026\imagens\carrossel-segunda <strong style="color:#0066CC">→ 7 slides PNG gerados</strong></span>
+            <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 25-31-05-2026\\imagens\\carrossel-segunda',this)">Copiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="checklist-item" data-id="12">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title">Revisar copies/legendas dos 3 posts antes de agendar</div>
+          <div class="item-sub">15 min · Ler em voz alta · Verificar CTA, emojis, hashtags</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+            <div class="path-box" style="flex:1;min-width:200px;">
+              <span class="path-txt" style="font-size:10px;">ADFly v1.0.docx</span>
+              <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 25-31-05-2026\\Pacote da Semana 25-31-05 - ADFly v1.0.docx',this)">Copiar</button>
+            </div>
+            <div class="path-box" style="flex:1;min-width:200px;">
+              <span class="path-txt" style="font-size:10px;">AleChef v1.0.docx</span>
+              <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 25-31-05-2026\\Pacote da Semana 25-31-05 - AleChef v1.0.docx',this)">Copiar</button>
+            </div>
+            <div class="path-box" style="flex:1;min-width:200px;">
+              <span class="path-txt" style="font-size:10px;">BPMF v1.0.docx</span>
+              <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 25-31-05-2026\\Pacote da Semana 25-31-05 - BPMF v1.0.docx',this)">Copiar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BLOCO 3 -->
+  <div class="section">
+    <div class="section-head open" onclick="toggleSection(this)">
+      <span>🌙</span><h2>NOITE DOMINGO (20h–21h) — Agendamento e Checklist Final</h2>
+      <span class="badge" style="background:#EBF5FB;color:#1A5276">~1h</span>
+      <span class="toggle">▾</span>
+    </div>
+    <div class="section-body open">
+
+      <div class="checklist-item" data-id="13">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title"><span class="company-tag" style="background:#EBF5FB;color:#0066CC">ADFly</span> Agendar Carrossel para Segunda 09h00</div>
+          <div class="item-sub">Meta Business Suite → Criar post → Agendar → Segunda 09h00</div>
+        </div>
+      </div>
+
+      <div class="checklist-item" data-id="14">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title"><span class="company-tag" style="background:#FEF9E7;color:#E67E22">AleChef</span> Agendar Reel bastidor para Segunda 09h30</div>
+          <div class="item-sub">Meta Business Suite → Criar post → Agendar → Segunda 09h30</div>
+        </div>
+      </div>
+
+      <div class="checklist-item" data-id="15">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title"><span class="company-tag" style="background:#EAFAF1;color:#27AE60">BPMF</span> Agendar Reel teaser para Terça 10h00</div>
+          <div class="item-sub">Meta Business Suite (IG) + TikTok Studio (TikTok) → Agendar → Terça 10h00</div>
+        </div>
+      </div>
+
+      <div class="checklist-item" data-id="16">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title">Registrar baseline "zero" de métricas nas 3 planilhas CRM</div>
+          <div class="item-sub">Seguidores atuais · Engajamento · Receita atual</div>
+          <div class="path-box" style="margin-top:6px;">
+            <span class="path-txt">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\00 - Base Estrategica\Dashboard de Performance ADFly v1.0.xlsx</span>
+            <button class="copy-btn" onclick="cp('C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\00 - Base Estrategica\\Dashboard de Performance ADFly v1.0.xlsx',this)">Copiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="checklist-item" data-id="17">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title">Checar checklist GO LIVE no Notion</div>
+          <div class="item-sub">Notion → "Checklist GO LIVE + Rotina Semanal" → Marcar itens concluídos</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BLOCO 4: D-DAY -->
+  <div class="section">
+    <div class="section-head open" onclick="toggleSection(this)">
+      <span>🚀</span><h2>D-DAY — SEGUNDA 25/05 — GO LIVE DAS 3 EMPRESAS</h2>
+      <span class="badge" style="background:#16A085;color:white">09h00</span>
+      <span class="toggle">▾</span>
+    </div>
+    <div class="section-body open">
+      <div class="time-line">
+        <div class="time-item">
+          <div class="time-dot-col"><div class="time-dot" style="background:#0066CC"></div><div class="time-line-v"></div></div>
+          <div class="time-content">
+            <div class="time-label">09h00</div>
+            <div class="time-title">🛩 ADFly — Post publica automaticamente</div>
+            <div class="time-desc">Carrossel "5 Multas do Síndico" · IG + Notificação WA para leads B2B</div>
+          </div>
+        </div>
+        <div class="time-item">
+          <div class="time-dot-col"><div class="time-dot" style="background:#E67E22"></div><div class="time-line-v"></div></div>
+          <div class="time-content">
+            <div class="time-label">09h30</div>
+            <div class="time-title">🍳 AleChef — Post publica automaticamente</div>
+            <div class="time-desc">Reel bastidor / apresentação · IG · Avisar contatos próximos via WA pessoal</div>
+          </div>
+        </div>
+        <div class="time-item">
+          <div class="time-dot-col"><div class="time-dot" style="background:#27AE60"></div><div class="time-line-v"></div></div>
+          <div class="time-content">
+            <div class="time-label">10h00</div>
+            <div class="time-title">🚴 BPMF — Post publica automaticamente</div>
+            <div class="time-desc">Reel teaser "A jornada começa" · IG + TikTok</div>
+          </div>
+        </div>
+        <div class="time-item">
+          <div class="time-dot-col"><div class="time-dot" style="background:#6B7280"></div><div class="time-line-v"></div></div>
+          <div class="time-content">
+            <div class="time-label">Ao longo do dia</div>
+            <div class="time-title">Monitorar + Responder</div>
+            <div class="time-desc">DMs e comentários das 3 contas · Usar respostas rápidas WA configuradas no domingo · Meta: responder em até 2h</div>
+          </div>
+        </div>
+        <div class="time-item">
+          <div class="time-dot-col"><div class="time-dot" style="background:#16A085"></div><div class="time-line-v"></div></div>
+          <div class="time-content">
+            <div class="time-label">17h30</div>
+            <div class="time-title">Marcar checklist como concluído no Notion</div>
+            <div class="time-desc">Notion → Checklist GO LIVE → marcar todos os itens do D-Day ✅</div>
+          </div>
+        </div>
+        <div class="time-item">
+          <div class="time-dot-col"><div class="time-dot" style="background:#9333EA"></div></div>
+          <div class="time-content">
+            <div class="time-label">18h–19h</div>
+            <div class="time-title">AG-09 — Sumário Pós-GO LIVE</div>
+            <div class="time-desc">Primeiro relatório de baseline: alcance, impressões, curtidas, DMs recebidos, cliques no link. 1 print de cada conta é suficiente.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCO 5: RISCOS -->
+  <div class="section">
+    <div class="section-head" onclick="toggleSection(this)">
+      <span>⚠️</span><h2>Riscos Identificados + Planos B</h2>
+      <span class="badge" style="background:#FDEDEC;color:#C0392B">Atenção</span>
+      <span class="toggle">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="checklist-item">
+        <div class="item-content">
+          <div class="item-title" style="color:#E67E22">🍳 Filmagem AleChef não sai domingo</div>
+          <div class="item-sub"><strong>Plano B:</strong> Carrossel com fotos de pratos já feitos + copy do Pacote da Semana · Não atrasa o GO LIVE</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="item-content">
+          <div class="item-title" style="color:#27AE60">🚴 Não tem vídeo do BPMF disponível</div>
+          <div class="item-sub"><strong>Plano B:</strong> Carrossel estático com fotos de passeios anteriores + texto "Quem somos" · Funciona igual</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="item-content">
+          <div class="item-title" style="color:#0066CC">🛩 Volume alto de DMs no primeiro dia</div>
+          <div class="item-sub"><strong>Solução:</strong> Respostas rápidas WA já configuradas · Priorizar quem perguntou preço ou demonstrou interesse real</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="item-content">
+          <div class="item-title" style="color:#6B7280">🏷 BPMF sem logo final até 30/05</div>
+          <div class="item-sub"><strong>Aprovado:</strong> Wordmark provisório (Montserrat Bold verde neon #4AF47B sobre preto #101010) · Logo final entregue até sexta 30/05</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCO 6: PRÓXIMOS PASSOS -->
+  <div class="section">
+    <div class="section-head" onclick="toggleSection(this)">
+      <span>📅</span><h2>Próximas Ações Pós-GO LIVE</h2>
+      <span class="toggle">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="checklist-item" data-id="18">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title">Entregar logo final BPMF Conceito 1 polido</div>
+          <div class="item-sub">Prazo: sexta 30/05 · AG-02 · Até lá: wordmark provisório em todos os posts</div>
+        </div>
+      </div>
+      <div class="checklist-item" data-id="19">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title">Sumário Pós-GO LIVE (AG-09)</div>
+          <div class="item-sub">Segunda 25/05 das 18h-19h · Baseline das 3 empresas · Primeiros sinais de engajamento</div>
+        </div>
+      </div>
+      <div class="checklist-item" data-id="20">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title">Dashboard KPIs consolidado 3 empresas (AG-09)</div>
+          <div class="item-sub">Semana 2 — 01/06 · Expandir Dashboard ADFly para incluir AleChef + BPMF</div>
+        </div>
+      </div>
+      <div class="checklist-item" data-id="21">
+        <div class="check-box" onclick="toggle(this)"></div>
+        <div class="item-content">
+          <div class="item-title">Revisão Onda 1 ADFly (AG-00 + AG-09)</div>
+          <div class="item-sub">Semana 6 — 22-28/06 · Decisão: DIA 4.5 vai ou aguarda mais validação</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+let total = 0;
+function _doCopy(text, btn, btnLabel) {
+  function onOk() {
+    if (btn) { btn.textContent = '✓ Copiado!'; btn.classList.add('ok','copied');
+      setTimeout(() => { btn.textContent = btnLabel || 'Copiar'; btn.classList.remove('ok','copied'); }, 2000); }
+    const t = document.getElementById('toast');
+    if (t) { t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
+  }
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(onOk).catch(() => _fbCopy(text, onOk));
+  } else { _fbCopy(text, onOk); }
+}
+function _fbCopy(text, onOk) {
+  const el = document.createElement('textarea');
+  el.value = text; el.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none;';
+  document.body.appendChild(el); el.focus(); el.select();
+  try { document.execCommand('copy'); onOk(); }
+  catch(e) { window.prompt('Copie o caminho abaixo:', text); }
+  document.body.removeChild(el);
+}
+function cp(path, btn) { _doCopy(path, btn, 'Copiar'); }
+function countTotal() { total = document.querySelectorAll('[data-id] .check-box').length; }
+function update() {
+  const done = document.querySelectorAll('.check-box.done').length;
+  const pct = total > 0 ? (done / total * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = done + ' / ' + total + ' concluídos';
+  document.getElementById('stat-done').textContent = done;
+  document.getElementById('stat-pend').textContent = total - done;
+  localStorage.setItem('golive2-checks', JSON.stringify([...document.querySelectorAll('[data-id] .check-box')].map(b => b.classList.contains('done'))));
+}
+function toggle(el) {
+  el.classList.toggle('done');
+  el.textContent = el.classList.contains('done') ? '✓' : '';
+  update();
+}
+function toggleSection(head) {
+  head.classList.toggle('open');
+  head.nextElementSibling.classList.toggle('open');
+}
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem('golive2-checks') || '[]');
+    const boxes = document.querySelectorAll('[data-id] .check-box');
+    s.forEach((v, i) => { if (v && boxes[i]) { boxes[i].classList.add('done'); boxes[i].textContent = '✓'; } });
+  } catch(e) {}
+}
+window.onload = () => { countTotal(); loadState(); update(); };
+</script>
+</body>
+</html>

@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Adfly Pacote Semana 18 24 05",
+  "schemaVersion": 1,
+  "description": "Board OPS da Semana 25–31/05 — 3 empresas, 9 tarefas, status interativo, links de arquivo e workflow Canva"
+}
+</script>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pacote da Semana — OPS Board</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
+
+  .header { background: linear-gradient(135deg, #1a1f2e 0%, #0f1117 100%); border-bottom: 1px solid #2d3748; padding: 20px 24px 0; }
+  .header-top { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .header-title { font-size: 22px; font-weight: 700; color: #fff; }
+  .header-sub { font-size: 13px; color: #718096; margin-top: 3px; }
+  .week-badge { background: #2d3748; border: 1px solid #4a5568; border-radius: 8px; padding: 6px 14px; font-size: 13px; font-weight: 600; color: #a0aec0; white-space: nowrap; }
+
+  .progress-bar-wrap { margin-top: 16px; }
+  .progress-labels { display: flex; justify-content: space-between; font-size: 11px; color: #718096; margin-bottom: 6px; }
+  .progress-track { background: #2d3748; border-radius: 4px; height: 6px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 4px; transition: width 0.4s; }
+  .progress-count { font-size: 12px; color: #a0aec0; margin-top: 6px; text-align: right; }
+
+  .tabs { display: flex; gap: 4px; margin-top: 16px; overflow-x: auto; }
+  .tab { padding: 9px 16px; border-radius: 8px 8px 0 0; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; border: none; background: transparent; color: #718096; transition: all 0.2s; border-bottom: 2px solid transparent; }
+  .tab:hover { color: #a0aec0; background: #1a2035; }
+  .tab.active { color: #fff; background: #1a2035; border-bottom-color: #667eea; }
+  .tab-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+
+  .content { padding: 20px 24px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .tasks-grid { display: flex; flex-direction: column; gap: 12px; }
+
+  .task-card { background: #1a1f2e; border: 1px solid #2d3748; border-radius: 12px; overflow: hidden; transition: border-color 0.2s; }
+  .task-card:hover { border-color: #4a5568; }
+  .task-card.bloqueado { border-left: 3px solid #e53e3e; }
+  .task-card.pendente  { border-left: 3px solid #d69e2e; }
+  .task-card.aguarda   { border-left: 3px solid #3182ce; }
+  .task-card.aprovado  { border-left: 3px solid #805ad5; }
+  .task-card.agendado  { border-left: 3px solid #319795; }
+  .task-card.publicado { border-left: 3px solid #38a169; opacity: 0.7; }
+
+  .task-header { padding: 14px 16px 10px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; cursor: pointer; }
+  .task-header-left { flex: 1; min-width: 0; }
+  .task-title-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .task-title { font-size: 15px; font-weight: 600; color: #fff; }
+  .company-badge { padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }
+  .badge-adfly   { background: #1a2a5e; color: #63b3ed; }
+  .badge-alechef { background: #3d1f0f; color: #f6ad55; }
+  .badge-bpmf    { background: #0d1a0d; color: #4AF47B; }
+  .format-tag { padding: 2px 7px; border-radius: 4px; font-size: 11px; background: #2d3748; color: #a0aec0; }
+  .task-date { font-size: 12px; color: #718096; margin-top: 5px; }
+
+  .status-select { appearance: none; border: 1px solid; border-radius: 6px; padding: 4px 24px 4px 10px; font-size: 12px; font-weight: 600; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23718096'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+  .status-bloqueado { background: #2d1515; color: #fc8181; border-color: #c53030; }
+  .status-pendente  { background: #2d2415; color: #f6c05e; border-color: #b7791f; }
+  .status-aguarda   { background: #15233a; color: #63b3ed; border-color: #2b6cb0; }
+  .status-aprovado  { background: #231a3a; color: #b794f4; border-color: #6b46c1; }
+  .status-agendado  { background: #0d2d2d; color: #4fd1c5; border-color: #2c7a7b; }
+  .status-publicado { background: #0d2b17; color: #68d391; border-color: #276749; }
+
+  .task-body { display: none; padding: 0 16px 16px; border-top: 1px solid #2d3748; }
+  .task-body.open { display: block; }
+
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #718096; margin: 14px 0 8px; }
+
+  .next-action { background: #0d1620; border: 1px solid #2c5282; border-radius: 8px; padding: 12px 14px; }
+  .next-action-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #4299e1; margin-bottom: 6px; }
+  .next-action-label::before { content: '▶  '; }
+  .next-action-text { font-size: 13px; color: #bee3f8; line-height: 1.5; }
+
+  /* ── FILE BOX — caminho copiável ── */
+  .file-box { background: #0f1117; border: 1px solid #2d3748; border-radius: 8px; padding: 10px 12px; display: flex; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
+  .file-box-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .file-box-info { flex: 1; min-width: 0; }
+  .file-box-name { font-size: 13px; font-weight: 600; color: #e2e8f0; }
+  .file-box-path { font-size: 11px; color: #4a5568; font-family: monospace; word-break: break-all; margin-top: 3px; }
+  .copy-btn { flex-shrink: 0; padding: 5px 12px; background: #2d3748; border: 1px solid #4a5568; border-radius: 6px; color: #a0aec0; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .copy-btn:hover { background: #4a5568; color: #fff; }
+  .copy-btn.copied { background: #276749; border-color: #38a169; color: #68d391; }
+
+  /* instrução abrir arquivo */
+  .open-hint { font-size: 11px; color: #4a5568; margin-top: 4px; font-style: italic; }
+
+  .canva-box { background: #1a0f2e; border: 1px solid #553c9a; border-radius: 8px; padding: 12px 14px; margin-top: 12px; }
+  .canva-box-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #9f7aea; margin-bottom: 8px; }
+  .canva-steps { list-style: none; counter-reset: cs; }
+  .canva-steps li { counter-increment: cs; font-size: 12px; color: #c4b5fd; line-height: 1.6; padding-left: 20px; position: relative; margin-bottom: 3px; }
+  .canva-steps li::before { content: counter(cs)"."; position: absolute; left: 0; color: #9f7aea; font-weight: 700; }
+  .canva-link { display: inline-block; margin-top: 8px; padding: 6px 14px; background: #553c9a; color: #fff; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none; }
+  .canva-link:hover { background: #6b46c1; }
+
+  .slides-pill { display: inline-flex; align-items: center; gap: 6px; background: #0d2b17; border: 1px solid #276749; border-radius: 20px; padding: 3px 10px; font-size: 11px; color: #68d391; margin-top: 8px; margin-bottom: 2px; }
+  .slides-pill::before { content: '●'; font-size: 8px; }
+
+  .checklist { list-style: none; }
+  .checklist li { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #a0aec0; padding: 5px 0; border-bottom: 1px solid #1a1f2e; }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li input[type=checkbox] { margin-top: 2px; cursor: pointer; accent-color: #667eea; flex-shrink: 0; }
+  .checklist li label { cursor: pointer; }
+  .check-done label { text-decoration: line-through; color: #4a5568; }
+
+  .overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .stat-card { background: #1a1f2e; border: 1px solid #2d3748; border-radius: 10px; padding: 14px 16px; }
+  .stat-number { font-size: 28px; font-weight: 700; }
+  .stat-label { font-size: 12px; color: #718096; margin-top: 3px; }
+  .stat-adfly   { color: #63b3ed; }
+  .stat-alechef { color: #f6ad55; }
+  .stat-bpmf    { color: #4AF47B; }
+  .stat-total   { color: #a78bfa; }
+
+  .pipeline-row { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+  .pipe-stage { flex: 1; min-width: 80px; text-align: center; padding: 10px 8px; border-radius: 8px; background: #1a1f2e; border: 1px solid #2d3748; }
+  .pipe-stage-num { font-size: 22px; font-weight: 700; }
+  .pipe-stage-label { font-size: 10px; color: #718096; margin-top: 3px; }
+  .pipe-bloqueado .pipe-stage-num { color: #fc8181; }
+  .pipe-pendente  .pipe-stage-num { color: #f6c05e; }
+  .pipe-aguarda   .pipe-stage-num { color: #63b3ed; }
+  .pipe-aprovado  .pipe-stage-num { color: #b794f4; }
+  .pipe-agendado  .pipe-stage-num { color: #4fd1c5; }
+  .pipe-publicado .pipe-stage-num { color: #68d391; }
+
+  .schedule-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .schedule-table th { background: #1a1f2e; color: #718096; font-weight: 600; text-transform: uppercase; font-size: 10px; letter-spacing: 0.6px; padding: 10px 12px; text-align: left; border-bottom: 1px solid #2d3748; }
+  .schedule-table td { padding: 11px 12px; border-bottom: 1px solid #1e2535; vertical-align: middle; }
+  .schedule-table tr:hover td { background: #1a2035; }
+
+  .alert-box { display: flex; gap: 10px; background: #1a1a0d; border: 1px solid #744210; border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; }
+  .alert-text { font-size: 13px; color: #fbd38d; line-height: 1.5; }
+
+  /* toast */
+  #toast { position: fixed; bottom: 20px; right: 20px; background: #276749; color: #68d391; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999; }
+  #toast.show { opacity: 1; }
+
+  /* instrucoes path box */
+  .path-card { background: #1a1f2e; border: 1px solid #2d3748; border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+  .path-card-title { font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px; }
+  .path-card-path { font-family: monospace; font-size: 11px; color: #a0aec0; background: #0f1117; border-radius: 6px; padding: 6px 10px; word-break: break-all; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div id="toast">✓ Caminho copiado!</div>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-title">📋 Pacote OPS da Semana</div>
+      <div class="header-sub">Dept. de MKT Virtual — 3 Empresas · Plano 3 Semanas · 02–21/06/2026</div>
+    </div>
+    <div class="week-badge">🗓️ 25–31/05/2026</div>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-labels"><span>Progresso da Semana</span><span id="progress-pct">0%</span></div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="progress-count" id="progress-count">0 de 9 tarefas publicadas</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('overview',this)"><span class="tab-dot" style="background:#a78bfa"></span>Visão Geral</button>
+    <button class="tab" onclick="switchTab('adfly',this)"><span class="tab-dot" style="background:#63b3ed"></span>ADFly</button>
+    <button class="tab" onclick="switchTab('alechef',this)"><span class="tab-dot" style="background:#f6ad55"></span>AleChef</button>
+    <button class="tab" onclick="switchTab('bpmf',this)"><span class="tab-dot" style="background:#4AF47B"></span>BPMF</button>
+    <button class="tab" onclick="switchTab('instrucoes',this)"><span class="tab-dot" style="background:#718096"></span>Como Abrir Arquivos</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- VISÃO GERAL -->
+  <div class="tab-panel active" id="tab-overview">
+    <div class="overview-grid">
+      <div class="stat-card"><div class="stat-number stat-adfly">20</div><div class="stat-label">Posts ADFly (3 sem.)</div></div>
+      <div class="stat-card"><div class="stat-number stat-alechef">5</div><div class="stat-label">Tarefas AleChef</div></div>
+      <div class="stat-card"><div class="stat-number stat-bpmf">3</div><div class="stat-label">Tarefas BPMF</div></div>
+      <div class="stat-card"><div class="stat-number stat-total">9</div><div class="stat-label">Total entregas</div></div>
+    </div>
+    <div class="section-title">Pipeline de Status</div>
+    <div class="pipeline-row">
+      <div class="pipe-stage pipe-bloqueado"><div class="pipe-stage-num" id="pn-bloqueado">-</div><div class="pipe-stage-label">🔴 Bloqueado</div></div>
+      <div class="pipe-stage pipe-pendente"><div class="pipe-stage-num" id="pn-pendente">-</div><div class="pipe-stage-label">🟡 Pendente</div></div>
+      <div class="pipe-stage pipe-aguarda"><div class="pipe-stage-num" id="pn-aguarda">-</div><div class="pipe-stage-label">🔵 Ag. Aprov.</div></div>
+      <div class="pipe-stage pipe-aprovado"><div class="pipe-stage-num" id="pn-aprovado">-</div><div class="pipe-stage-label">🟣 Aprovado</div></div>
+      <div class="pipe-stage pipe-agendado"><div class="pipe-stage-num" id="pn-agendado">-</div><div class="pipe-stage-label">🩵 Agendado</div></div>
+      <div class="pipe-stage pipe-publicado"><div class="pipe-stage-num" id="pn-publicado">-</div><div class="pipe-stage-label">🟢 Publicado</div></div>
+    </div>
+    <div class="section-title">Grade da Semana</div>
+    <table class="schedule-table">
+      <thead><tr><th>Dia</th><th>Empresa</th><th>Formato</th><th>Título</th><th>Status</th></tr></thead>
+      <tbody id="schedule-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- ADFLY -->
+  <div class="tab-panel" id="tab-adfly">
+  <div style="display:flex;gap:8px;margin:8px 0 12px;flex-wrap:wrap">
+    <button onclick="filterSemana('all')" id="f-all" style="padding:5px 14px;border-radius:20px;border:1px solid #00D4FF;background:#00D4FF;color:#0a0a0c;font-size:12px;font-weight:700;cursor:pointer">Todas</button>
+    <button onclick="filterSemana('Semana 1')" id="f-s1" style="padding:5px 14px;border-radius:20px;border:1px solid #334155;background:transparent;color:#94a3b8;font-size:12px;cursor:pointer">Semana 1 · 02-07/06</button>
+    <button onclick="filterSemana('Semana 2')" id="f-s2" style="padding:5px 14px;border-radius:20px;border:1px solid #334155;background:transparent;color:#94a3b8;font-size:12px;cursor:pointer">Semana 2 · 08-14/06</button>
+    <button onclick="filterSemana('Semana 3')" id="f-s3" style="padding:5px 14px;border-radius:20px;border:1px solid #334155;background:transparent;color:#94a3b8;font-size:12px;cursor:pointer">Semana 3 · 15-21/06</button>
+  </div>
+    <div class="alert-box"><span style="font-size:16px;flex-shrink:0;">ℹ️</span><span class="alert-text">Para abrir os arquivos: clique em <strong>Copiar Caminho</strong> no card, depois cole no <strong>Explorador de Arquivos do Windows</strong> (Win+E) ou no File Picker de qualquer app.</span></div>
+    <div class="tasks-grid" id="tasks-adfly"></div>
+  </div>
+
+  <!-- ALECHEF -->
+  <div class="tab-panel" id="tab-alechef">
+    <div class="alert-box" style="background:#1a0f00;border-color:#7b341e;"><span style="font-size:16px;flex-shrink:0;">ℹ️</span><span class="alert-text">Para abrir os arquivos: clique em <strong>Copiar Caminho</strong> no card, depois cole no Explorador de Arquivos (Win+E).</span></div>
+    <div class="tasks-grid" id="tasks-alechef"></div>
+  </div>
+
+  <!-- BPMF -->
+  <div class="tab-panel" id="tab-bpmf">
+    <div class="alert-box" style="background:#0a1a0a;border-color:#22543d;"><span style="font-size:16px;flex-shrink:0;">ℹ️</span><span class="alert-text">Para abrir os arquivos: clique em <strong>Copiar Caminho</strong> no card, depois cole no Explorador de Arquivos (Win+E).</span></div>
+    <div class="tasks-grid" id="tasks-bpmf"></div>
+  </div>
+
+  <!-- COMO ABRIR ARQUIVOS -->
+  <div class="tab-panel" id="tab-instrucoes">
+    <div style="max-width:620px;">
+      <div class="section-title" style="margin-top:0">Como abrir os arquivos</div>
+      <p style="font-size:13px;color:#a0aec0;margin-bottom:16px;line-height:1.6;">Os links dentro do painel não abrem direto (limitação de segurança do ambiente). Use o caminho copiável:</p>
+
+      <div style="background:#1a1f2e;border:1px solid #2d3748;border-radius:10px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;color:#e2e8f0;margin-bottom:10px;">📂 Método 1 — Explorador de Arquivos</div>
+        <ol style="font-size:13px;color:#a0aec0;padding-left:18px;line-height:2;">
+          <li>Clique <strong style="color:#fff;">Copiar Caminho</strong> no card da tarefa</li>
+          <li>Aperte <strong style="color:#fff;">Win + E</strong> para abrir o Explorador</li>
+          <li>Clique na barra de endereço no topo</li>
+          <li>Cole (<strong style="color:#fff;">Ctrl+V</strong>) e aperte Enter</li>
+        </ol>
+      </div>
+
+      <div style="background:#1a1f2e;border:1px solid #2d3748;border-radius:10px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;color:#e2e8f0;margin-bottom:10px;">📂 Método 2 — Executar (mais rápido)</div>
+        <ol style="font-size:13px;color:#a0aec0;padding-left:18px;line-height:2;">
+          <li>Clique <strong style="color:#fff;">Copiar Caminho</strong> no card</li>
+          <li>Aperte <strong style="color:#fff;">Win + R</strong></li>
+          <li>Cole o caminho e aperte Enter — abre direto no Word ou na pasta</li>
+        </ol>
+      </div>
+
+      <div class="section-title">Pastas principais da semana</div>
+
+      <div class="path-card">
+        <div class="path-card-title">📁 Pasta raiz da semana</div>
+        <div class="path-card-path" id="root-path">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\Plano 3 semanas 02-21-06</div>
+        <button class="copy-btn" onclick="copyText('root-path',this)">Copiar Caminho</button>
+      </div>
+
+      <div class="path-card">
+        <div class="path-card-title">🖼️ Slides Carrossel ADFly (Canva/PNG)</div>
+        <div class="path-card-path" id="slides-adfly">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\Plano 3 semanas 02-21-06\imagens\carrossel-segunda</div>
+        <button class="copy-btn" onclick="copyText('slides-adfly',this)">Copiar Caminho</button>
+      </div>
+
+      <div class="path-card">
+        <div class="path-card-title">🖼️ Slides Carrossel AleChef (a produzir)</div>
+        <div class="path-card-path" id="slides-alechef">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\Plano 3 semanas 02-21-06\imagens\carrossel-alechef-quarta</div>
+        <button class="copy-btn" onclick="copyText('slides-alechef',this)">Copiar Caminho</button>
+      </div>
+
+      <div class="path-card">
+        <div class="path-card-title">🖼️ Slides Carrossel BPMF (5 slides PNG + Canva)</div>
+        <div class="path-card-path" id="slides-bpmf">C:\Users\aleta\OneDrive\Documentos\Claude\Projects\Projeto Área de MKT\Plano 3 semanas 02-21-06\imagens\carrossel-bpmf-quarta</div>
+        <button class="copy-btn" onclick="copyText('slides-bpmf',this)">Copiar Caminho</button>
+      </div>
+
+      <div class="section-title">Workflow Canva</div>
+      <div class="canva-box">
+        <div class="canva-box-title">Como editar slides no Canva</div>
+        <ol class="canva-steps">
+          <li>Abra <strong>canva.com</strong> → "Criar design" → "Post Instagram (1080×1080)"</li>
+          <li>Clique em <strong>Uploads</strong> (barra lateral esquerda)</li>
+          <li>Arraste os PNGs da pasta copiada acima para o Canva</li>
+          <li>Use como referência e ajuste textos/cores pelo editor nativo</li>
+        </ol>
+        <a class="canva-link" href="https://www.canva.com/create/instagram-posts/" target="_blank">Abrir Canva → Posts Instagram</a>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<script>
+const TASKS = [
+  // ══ SEMANA 1 — 02-07/06 ════════════════════════════════════════
+  { id:'a1-carrossel-seg', company:'ADFly', badge:'badge-adfly', format:'Carrossel', day:'Seg 02/06', daySort:1, semana:'Semana 1',
+    title:'5 sinais que sua fachada precisa de inspeção urgente', subtitle:'Técnico · NBR 5.674 · IG + LinkedIn',
+    defaultStatus:'pendente', responsavel:'Alexandre',
+    nextAction:'Slides 1-2 prontos no Canva (Brand Kit ADFly). Completar slides 3-5 duplicando o slide 2. Legenda no Plano de Conteúdo. Agendar Meta Business Suite Seg 02/06 9h.',
+    files:[
+      {icon:'📄', name:'Plano de Conteúdo ADFly 3 Semanas', sub:'Roteiro completo + legenda', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'},
+    ],
+    checklist:['Completar slides 3-5 no Canva (duplicar slide 2)','Revisar legenda no Plano de Conteúdo','Agendar Meta Business Suite — Seg 02/06 9h','Publicar LinkedIn também'] },
+
+  { id:'a1-reel-ter', company:'ADFly', badge:'badge-adfly', format:'Reel', day:'Ter 03/06', daySort:2, semana:'Semana 1',
+    title:'O síndico disse que o prédio estava ótimo. O drone mostrou outra história.', subtitle:'Storytelling · Inspeção · IG',
+    defaultStatus:'pendente', responsavel:'Alexandre filma',
+    nextAction:'Talking head — locação técnica. Roteiro completo no Plano de Conteúdo. Tom: suspense controlado. B-roll de voo ADFly. Dado: "R$ 12k vs R$ 60k". Publicar Ter 03/06 18h.',
+    files:[{icon:'📄', name:'Roteiro Reel Storytelling', sub:'Plano de Conteúdo ADFly · Semana 1', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'}],
+    checklist:['Ler roteiro completo no Plano de Conteúdo','Gravar talking head — locação técnica','Adicionar B-roll de voo (arquivo)','Texto na tela com dados','Publicar Ter 03/06 18h'] },
+
+  { id:'a1-reel-qua', company:'ADFly', badge:'badge-adfly', format:'Reel', day:'Qua 04/06', daySort:3, semana:'Semana 1',
+    title:'Drone vs. Andaime — a diferença em 60 segundos', subtitle:'Técnico/Educação · IG + TikTok',
+    defaultStatus:'pendente', responsavel:'Alexandre filma',
+    nextAction:'Split-screen: andaime vs drone em voo. Roteiro no Plano de Conteúdo. Dado: "30 min vs dias" / "40% menos custo". Publicar Qua 04/06 9h IG + TikTok.',
+    files:[{icon:'📄', name:'Roteiro Reel Drone vs. Andaime', sub:'Plano de Conteúdo ADFly · Semana 1', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'}],
+    checklist:['Ler roteiro no Plano de Conteúdo','Separar clips de voo ADFly','Buscar imagem andaime royalty-free','Editar split-screen CapCut','Publicar Qua 04/06 9h — IG + TikTok'] },
+
+  { id:'a1-linkedin-qui', company:'ADFly', badge:'badge-adfly', format:'Post', day:'Qui 05/06', daySort:4, semana:'Semana 1',
+    title:'NBR 5.674: o que todo síndico precisa saber', subtitle:'Técnico B2B · LinkedIn',
+    defaultStatus:'pendente', responsavel:'Alexandre',
+    nextAction:'Copy completa no Plano de Conteúdo. Criar imagem no Canva (fundo escuro ADFly, azul neon). Publicar Qui 05/06 9h LinkedIn.',
+    files:[{icon:'📄', name:'Copy LinkedIn NBR 5.674', sub:'Plano de Conteúdo ADFly · Semana 1', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'}],
+    checklist:['Copiar texto do Plano para LinkedIn','Criar imagem Canva (Brand Kit ADFly)','Publicar Qui 05/06 9h','Responder comentários no mesmo dia'] },
+
+  { id:'a1-post-sex', company:'ADFly', badge:'badge-adfly', format:'Post', day:'Sex 06/06', daySort:5, semana:'Semana 1',
+    title:'Antes e depois — fachada inspecionada com drone', subtitle:'Criativo · IG + LinkedIn',
+    defaultStatus:'pendente', responsavel:'Alexandre',
+    nextAction:'Foto real de atendimento ou imagem Unsplash. Legenda no Plano de Conteúdo. Publicar Sex 06/06 9h. Preencher Dashboard Performance.',
+    files:[{icon:'📄', name:'Legenda Antes/Depois', sub:'Plano de Conteúdo ADFly · Semana 1', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'}],
+    checklist:['Selecionar foto antes/depois','Criar post Canva (paleta ADFly escuro)','Publicar Sex 06/06 9h IG + LinkedIn','Preencher Dashboard Performance ADFly'] },
+
+  { id:'a1-reel-sab', company:'ADFly', badge:'badge-adfly', format:'Reel', day:'Sáb 07/06', daySort:6, semana:'Semana 1',
+    title:'6h da manhã, drone montado, condomínio esperando — POV real', subtitle:'Bastidor · POV · IG',
+    defaultStatus:'pendente', responsavel:'Alexandre filma',
+    nextAction:'POV câmera — preparação do drone de manhã. Cortes rápidos: carro, setup, decolagem, tela de monitoramento. Tom: real, sem filtro. Publicar Sáb 07/06 10h.',
+    files:[{icon:'📄', name:'Roteiro Reel POV Rotina', sub:'Plano de Conteúdo ADFly · Semana 1', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'}],
+    checklist:['Filmar prep drone de manhã (POV)','Cortes rápidos de todo o processo','Trilha dinâmica progressiva','Publicar Sáb 07/06 10h'] },
+
+  // ══ SEMANA 2 — 08-14/06 ════════════════════════════════════════
+  { id:'a2-reel-seg', company:'ADFly', badge:'badge-adfly', format:'Reel', day:'Seg 08/06', daySort:8, semana:'Semana 2',
+    title:'"Pequena infiltração." O drone encontrou fissuras em 3 pontos diferentes.', subtitle:'Storytelling Forte · Alcance máximo · IG',
+    defaultStatus:'pendente', responsavel:'Alexandre filma',
+    nextAction:'Talking head + B-roll câmera térmica. Roteiro no Plano de Conteúdo. CTA: "Salva e manda para o síndico do seu prédio." Publicar Seg 08/06 9h.',
+    files:[{icon:'📄', name:'Roteiro Reel Storytelling Semana 2', sub:'Plano de Conteúdo ADFly · Semana 2', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'}],
+    checklist:['Ler roteiro no Plano de Conteúdo','Talking head — locação técnica','B-roll câmera térmica (se disponível)','Texto na tela: "3 focos distintos"','Publicar Seg 08/06 9h'] },
+
+  { id:'a2-carrossel-ter', company:'ADFly', badge:'badge-adfly', format:'Carrossel', day:'Ter 09/06', daySort:9, semana:'Semana 2',
+    title:'Chão vs. Drone — mesmo prédio, resultados completamente diferentes', subtitle:'Autoridade · Visual comparativo · IG',
+    defaultStatus:'pendente', responsavel:'Alexandre',
+    nextAction:'5 slides PNG prontos na pasta. Abrir, revisar, importar no Canva para ajuste de fontes se necessário. Layout split: esquerda=chão (vermelho/limitado) / direita=drone (verde/completo). Publicar Ter 09/06 18h.',
+    files:[
+      {icon:'📄', name:'Legenda Carrossel Chão vs. Drone', sub:'Plano de Conteúdo ADFly · Semana 2', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'},
+      {icon:'🖼️', name:'5 Slides PNG — Chão vs. Drone', sub:'tema11-chao-vs-drone/ · 5 slides', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 08-14-06-2026\\imagens\\carrosseis\\tema11-chao-vs-drone'},
+    ],
+    checklist:['Abrir pasta de slides PNG','Revisar e ajustar no Canva se necessário','Copiar legenda do Plano de Conteúdo','Publicar Ter 09/06 18h'] },
+
+  { id:'a2-reel-qua', company:'ADFly', badge:'badge-adfly', format:'Reel', day:'Qua 10/06', daySort:10, semana:'Semana 2',
+    title:'"Inspeção rápida" que quase embargou a obra da construtora', subtitle:'Storytelling · Persona construtora/eng · IG',
+    defaultStatus:'pendente', responsavel:'Alexandre filma',
+    nextAction:'Talking head locação técnica. Dado: "R$ 8k preventivo vs embargo + processo". CTA direto WhatsApp. Roteiro completo no Plano de Conteúdo. Publicar Qua 10/06 9h.',
+    files:[{icon:'📄', name:'Roteiro Reel Construtora', sub:'Plano de Conteúdo ADFly · Semana 2', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'}],
+    checklist:['Ler roteiro no Plano de Conteúdo','Gravar talking head — locação técnica','CTA direto WhatsApp (11) 99286-6919','Publicar Qua 10/06 9h'] },
+
+  { id:'a2-reel-qui', company:'ADFly', badge:'badge-adfly', format:'Reel', day:'Qui 11/06', daySort:11, semana:'Semana 2',
+    title:'Corretor me ligou às 8h. Imóvel vendido na semana seguinte.', subtitle:'Storytelling Conversão · Corretor imobiliário · IG',
+    defaultStatus:'pendente', responsavel:'Alexandre filma',
+    nextAction:'Resultado real mensurável. CTA direto WhatsApp. Roteiro no Plano de Conteúdo. B-roll de imóvel se disponível. Publicar Qui 11/06 18h.',
+    files:[{icon:'📄', name:'Roteiro Reel Corretor', sub:'Plano de Conteúdo ADFly · Semana 2', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'}],
+    checklist:['Ler roteiro no Plano de Conteúdo','B-roll de imóvel (arquivo)','CTA WhatsApp no final','Publicar Qui 11/06 18h'] },
+
+  { id:'a2-carrossel-sex', company:'ADFly', badge:'badge-adfly', format:'Carrossel', day:'Sex 12/06', daySort:12, semana:'Semana 2',
+    title:'Quanto cobrar como piloto de drone? O cálculo que ninguém te mostrou.', subtitle:'Pilotos/Mentoria · Lead capture · IG',
+    defaultStatus:'pendente', responsavel:'Alexandre',
+    nextAction:'5 slides PNG prontos na pasta. Slide final tem CTA para lista de espera mentoria ADFly Lab (R$ 4.997). Monitorar DMs e comentários ativamente. Publicar Sex 12/06 12h.',
+    files:[
+      {icon:'📄', name:'Legenda Carrossel Quanto Cobrar', sub:'Plano de Conteúdo ADFly · Semana 2', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'},
+      {icon:'🖼️', name:'5 Slides PNG — Quanto Cobrar', sub:'tema03-quanto-cobrar/ · 5 slides', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 08-14-06-2026\\imagens\\carrosseis\\tema03-quanto-cobrar'},
+    ],
+    checklist:['Abrir e revisar slides PNG','Ativar link lista de espera mentoria na bio','Copiar legenda do Plano de Conteúdo','Publicar Sex 12/06 12h','Monitorar DMs — lead capture mentoria'] },
+
+  { id:'a2-reel-sab', company:'ADFly', badge:'badge-adfly', format:'Reel', day:'Sáb 13/06', daySort:13, semana:'Semana 2',
+    title:'Vento 22km/h, cliente precisava das imagens. O que aconteceu.', subtitle:'Bastidor honesto · Credibilidade · IG',
+    defaultStatus:'pendente', responsavel:'Alexandre filma',
+    nextAction:'Tom autêntico. Mostrar app de clima (Windy). Admitir a dificuldade aumenta credibilidade. Roteiro no Plano de Conteúdo. Publicar Sáb 13/06 10h.',
+    files:[{icon:'📄', name:'Roteiro Reel Bastidor Honesto', sub:'Plano de Conteúdo ADFly · Semana 2', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'}],
+    checklist:['Ler roteiro no Plano de Conteúdo','Mostrar tela do app Windy no vídeo','Tom real e autêntico','Publicar Sáb 13/06 10h'] },
+
+  { id:'a2-reel-dom', company:'ADFly', badge:'badge-adfly', format:'Reel', day:'Dom 14/06', daySort:14, semana:'Semana 2',
+    title:'Corretor sem drone em imóvel de R$800k+ está perdendo o negócio.', subtitle:'Opinião forte · Autoridade imóveis · IG',
+    defaultStatus:'pendente', responsavel:'Alexandre filma',
+    nextAction:'Opinião forte sem desculpas. Citar dado: "23 dias menos no mercado". CTA direto WhatsApp para corretoras. Publicar Dom 14/06 12h.',
+    files:[{icon:'📄', name:'Roteiro Reel Opinião Corretor', sub:'Plano de Conteúdo ADFly · Semana 2', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'}],
+    checklist:['Tom assertivo — sem suavizar','Citar dado: 23 dias menos no mercado','CTA direto WhatsApp (11) 99286-6919','Publicar Dom 14/06 12h'] },
+
+  // ══ SEMANA 3 — 15-21/06 ════════════════════════════════════════
+  { id:'a3-carrossel-seg', company:'ADFly', badge:'badge-adfly', format:'Carrossel', day:'Seg 15/06', daySort:15, semana:'Semana 3',
+    title:'5 problemas em fachada que só aparecem na imagem aérea', subtitle:'Autoridade técnica · Saved content · IG',
+    defaultStatus:'pendente', responsavel:'Alexandre',
+    nextAction:'7 slides PNG prontos na pasta. Layout com dados de custo por problema. Salvar = alto engajamento. Publicar Seg 15/06 9h.',
+    files:[
+      {icon:'📄', name:'Legenda 5 Problemas Fachada', sub:'Plano de Conteúdo ADFly · Semana 3', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'},
+      {icon:'🖼️', name:'7 Slides PNG — 5 Problemas', sub:'tema17-5-problemas-fachada/ · 7 slides', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 15-21-06-2026\\imagens\\carrosseis\\tema17-5-problemas-fachada'},
+    ],
+    checklist:['Abrir e revisar slides PNG','Copiar legenda do Plano de Conteúdo','Publicar Seg 15/06 9h','Monitorar salvamentos (meta: >50)'] },
+
+  { id:'a3-reel-ter', company:'ADFly', badge:'badge-adfly', format:'Reel', day:'Ter 16/06', daySort:16, semana:'Semana 3',
+    title:'Uma fissura "decorativa" custa R$40k em 2 anos. Deixa eu te mostrar.', subtitle:'Urgência técnica · Talking head · IG',
+    defaultStatus:'pendente', responsavel:'Alexandre filma',
+    nextAction:'Talking head forte. Dedo apontando — tom de alerta expert. CTA com oferta de avaliação gratuita. Roteiro no Plano de Conteúdo. Publicar Ter 16/06 12h.',
+    files:[{icon:'📄', name:'Roteiro Reel Fissura R$40k', sub:'Plano de Conteúdo ADFly · Semana 3', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'}],
+    checklist:['Ler roteiro no Plano de Conteúdo','Tom de alerta expert — dados precisos','CTA: "avaliação rápida gratuita"','Publicar Ter 16/06 12h'] },
+
+  { id:'a3-carrossel-qua', company:'ADFly', badge:'badge-adfly', format:'Carrossel', day:'Qua 17/06', daySort:17, semana:'Semana 3',
+    title:'Relatório técnico de vistoria com drone — checklist completo', subtitle:'Autoridade B2B · Engenheiro · IG + LinkedIn',
+    defaultStatus:'pendente', responsavel:'Alexandre',
+    nextAction:'8 slides PNG prontos na pasta. Checklist visual de 6 itens obrigatórios. Publicar Qua 17/06 18h.',
+    files:[
+      {icon:'📄', name:'Legenda Checklist Relatório', sub:'Plano de Conteúdo ADFly · Semana 3', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'},
+      {icon:'🖼️', name:'8 Slides PNG — Checklist Relatório', sub:'tema27-checklist-relatorio/ · 8 slides', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 15-21-06-2026\\imagens\\carrosseis\\tema27-checklist-relatorio'},
+    ],
+    checklist:['Abrir e revisar slides PNG','Copiar legenda do Plano de Conteúdo','Publicar Qua 17/06 18h — IG + LinkedIn'] },
+
+  { id:'a3-carrossel-qui', company:'ADFly', badge:'badge-adfly', format:'Carrossel', day:'Qui 18/06', daySort:18, semana:'Semana 3',
+    title:'Posso voar drone perto de prédio? A resposta oficial da ANAC.', subtitle:'Pilotos/Autoridade · CTA duplo · IG',
+    defaultStatus:'pendente', responsavel:'Alexandre',
+    nextAction:'4 slides PNG prontos. CTA duplo: clientes (contratar) + pilotos (mentoria). Publicar Qui 18/06 18h.',
+    files:[
+      {icon:'📄', name:'Legenda ANAC Regulamentação', sub:'Plano de Conteúdo ADFly · Semana 3', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'},
+      {icon:'🖼️', name:'4 Slides PNG — ANAC Regulamentação', sub:'tema23-anac-regulamentacao/ · 4 slides', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 15-21-06-2026\\imagens\\carrosseis\\tema23-anac-regulamentacao'},
+    ],
+    checklist:['Abrir e revisar slides PNG','Copiar legenda do Plano de Conteúdo','Publicar Qui 18/06 18h'] },
+
+  { id:'a3-reel-sex', company:'ADFly', badge:'badge-adfly', format:'Reel', day:'Sex 19/06', daySort:19, semana:'Semana 3',
+    title:'Como precifiquei meu primeiro serviço — o erro e o que aprendi.', subtitle:'Storytelling pilotos · Lead capture mentoria · IG',
+    defaultStatus:'pendente', responsavel:'Alexandre filma',
+    nextAction:'Tom confessional — vulnerabilidade estratégica. Números reais. CTA claro para mentoria. O melhor captador de leads pilotos desta campanha. Publicar Sex 19/06 12h.',
+    files:[{icon:'📄', name:'Roteiro Reel Precificação', sub:'Plano de Conteúdo ADFly · Semana 3', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'}],
+    checklist:['Ler roteiro no Plano de Conteúdo','Tom confessional com números reais','CTA: lista espera mentoria ADFly Lab','Publicar Sex 19/06 12h','Monitorar DMs — lead capture crítico'] },
+
+  { id:'a3-carrossel-sab', company:'ADFly', badge:'badge-adfly', format:'Carrossel', day:'Sáb 20/06', daySort:20, semana:'Semana 3',
+    title:'Meu equipamento real de campo: o que carrego, o que custa.', subtitle:'Bastidor · Pilotos · IG',
+    defaultStatus:'pendente', responsavel:'Alexandre',
+    nextAction:'6 slides PNG prontos. Último slide CTA mentoria. Fotos reais do equipamento performam muito melhor que ícones. Publicar Sáb 20/06 10h.',
+    files:[
+      {icon:'📄', name:'Legenda Equipamento Campo', sub:'Plano de Conteúdo ADFly · Semana 3', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'},
+      {icon:'🖼️', name:'6 Slides PNG — Equipamento Campo', sub:'tema29-equipamento-campo/ · 6 slides', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 15-21-06-2026\\imagens\\carrosseis\\tema29-equipamento-campo'},
+    ],
+    checklist:['Abrir e revisar slides PNG','Adicionar foto real do equipamento se disponível','Publicar Sáb 20/06 10h'] },
+
+  { id:'a3-reel-dom', company:'ADFly', badge:'badge-adfly', format:'Reel', day:'Dom 21/06', daySort:21, semana:'Semana 3',
+    title:'POV: você finalmente cobra o que seu serviço vale.', subtitle:'Trend adaptada · Pilotos · CTA mentoria · IG',
+    defaultStatus:'pendente', responsavel:'Alexandre filma',
+    nextAction:'Trend POV — câmera subjetiva, cortes rápidos. Trilha tendência atual (verificar TikTok na semana). CTA mentoria ADFly Lab. Publicar Dom 21/06 12h.',
+    files:[{icon:'📄', name:'Roteiro Reel POV Precificação', sub:'Plano de Conteúdo ADFly · Semana 3', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Plano de Conteúdo ADFly 3 Semanas 02-21-06-2026.docx'}],
+    checklist:['Verificar trend de trilha atual no TikTok','Gravar POV câmera subjetiva','CTA: "Mentoria ADFly Lab — vagas limitadas"','Publicar Dom 21/06 12h'] },
+
+  // ══ ALECHEF ════════════════════════════════════════════════════
+  { id:'alechef-cardapio-seg', company:'AleChef', badge:'badge-alechef', format:'Post', day:'Seg 02/06', daySort:1, semana:'Semana 1',
+    title:'Cardápio da semana — marmitas disponíveis', subtitle:'P3 Cardápio · IG + Stories', defaultStatus:'pendente', responsavel:'Alexandre',
+    nextAction:'Fotografar pratos com luz natural. Fixar no topo do perfil. 3 stories em sequência.',
+    files:[{icon:'📄', name:'Texto Cardápio', sub:'Pacote AleChef 01-07-06', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Pacote da Semana 01-07-06 - AleChef v1.0.docx'}],
+    checklist:['Fotografar pratos do cardápio','Publicar Seg 02/06 9h — FIXAR no topo','Publicar sequência de 3 stories'] },
+
+  { id:'alechef-reel-ter', company:'AleChef', badge:'badge-alechef', format:'Reel', day:'Ter 03/06', daySort:2, semana:'Semana 1',
+    title:'Como planejo 50 marmitas de uma vez — bastidor', subtitle:'P1 Bastidor · IG + TikTok', defaultStatus:'pendente', responsavel:'Alexandre filma',
+    nextAction:'Filmar na segunda durante preparo. Câmera estática time-lapse + câmera em mão.',
+    files:[{icon:'📄', name:'Roteiro Reel Bastidor', sub:'Pacote AleChef 01-07-06', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Pacote da Semana 01-07-06 - AleChef v1.0.docx'}],
+    checklist:['Filmar durante preparo (segunda)','Publicar Ter 03/06 9h IG + TikTok'] },
+
+  { id:'alechef-tiktok-qua', company:'AleChef', badge:'badge-alechef', format:'TikTok', day:'Qua 04/06', daySort:3, semana:'Semana 1',
+    title:'3 ingredientes que nunca faltam nas minhas marmitas gourmet', subtitle:'P5 Dicas · TikTok + IG', defaultStatus:'pendente', responsavel:'Alexandre filma',
+    nextAction:'Vídeo 30s — cortes rápidos nos ingredientes com texto na tela.',
+    files:[{icon:'📄', name:'Roteiro TikTok Ingredientes', sub:'Pacote AleChef 01-07-06', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Pacote da Semana 01-07-06 - AleChef v1.0.docx'}],
+    checklist:['Gravar 3 close-ups ingredientes','Publicar Qua 04/06 9h TikTok + IG'] },
+
+  { id:'alechef-carrossel-qui', company:'AleChef', badge:'badge-alechef', format:'Carrossel', day:'Qui 05/06', daySort:4, semana:'Semana 1',
+    title:'Como funciona uma noite com chef privado em casa', subtitle:'P2 Chef em Casa · IG', defaultStatus:'pendente', responsavel:'Alexandre',
+    nextAction:'4 slides no Canva. Brand Kit AleChef (Teal + Ouro).',
+    files:[{icon:'📄', name:'Conteúdo Carrossel Chef em Casa', sub:'Pacote AleChef 01-07-06', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Pacote da Semana 01-07-06 - AleChef v1.0.docx'}],
+    checklist:['Criar 4 slides Canva (Brand Kit AleChef)','Publicar Qui 05/06 9h'] },
+
+  { id:'alechef-stories-sex', company:'AleChef', badge:'badge-alechef', format:'Stories', day:'Sex 06/06', daySort:5, semana:'Semana 1',
+    title:'Enquete + caixa aberta de engajamento', subtitle:'Engajamento · IG Stories', defaultStatus:'pendente', responsavel:'Alexandre',
+    nextAction:'3 stories em sequência. Responder TODAS as respostas no mesmo dia.',
+    files:[{icon:'📄', name:'Roteiro Stories', sub:'Pacote AleChef 01-07-06', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Pacote da Semana 01-07-06 - AleChef v1.0.docx'}],
+    checklist:['Publicar 3 stories Sex 06/06','Responder TODAS as caixas no mesmo dia'] },
+
+  // ══ BPMF ════════════════════════════════════════════════════════
+  { id:'bpmf-carrossel-seg', company:'BPMF', badge:'badge-bpmf', format:'Carrossel', day:'Seg 02/06', daySort:1, semana:'Semana 1',
+    title:'Por que pedalar em grupo muda tudo — 3 razões reais', subtitle:'Comunidade · IG', defaultStatus:'pendente', responsavel:'Alexandre',
+    nextAction:'Slides 1-2 salvos no Canva. Completar 3-5 duplicando slide 2. PNGs referência na pasta.',
+    files:[
+      {icon:'📄', name:'Legenda Carrossel BPMF', sub:'Pacote BPMF 01-07-06', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Pacote da Semana 01-07-06 - BPMF v1.0.docx'},
+      {icon:'🖼️', name:'5 Slides PNG BPMF Referência', sub:'carrossel-bpmf/', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\imagens\\carrossel-bpmf'},
+    ],
+    checklist:['Completar slides 3-5 no Canva','Publicar Seg 02/06 9h'] },
+
+  { id:'bpmf-reel-qui', company:'BPMF', badge:'badge-bpmf', format:'Reel', day:'Qui 05/06', daySort:4, semana:'Semana 1',
+    title:'O que acontece em uma jornada BPMF — trailer', subtitle:'Experiência · IG + TikTok', defaultStatus:'pendente', responsavel:'Alexandre filma',
+    nextAction:'Compilar clips de jornadas anteriores. Cortes rápidos, trilha épica. 45s total.',
+    files:[{icon:'📄', name:'Roteiro Reel Trailer BPMF', sub:'Pacote BPMF 01-07-06', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Pacote da Semana 01-07-06 - BPMF v1.0.docx'}],
+    checklist:['Selecionar clips de jornadas anteriores','Editar trailer 45s com trilha épica','Publicar Qui 05/06 9h IG + TikTok'] },
+
+  { id:'bpmf-cta-sex', company:'BPMF', badge:'badge-bpmf', format:'Post', day:'Sex 06/06', daySort:5, semana:'Semana 1',
+    title:'Jornada Julho — vagas abertas', subtitle:'CTA · IG + WhatsApp', defaultStatus:'pendente', responsavel:'Alexandre',
+    nextAction:'Criar post Canva com logo BPMF oficial. Publicar IG 9h. Enviar mensagem grupo WhatsApp.',
+    files:[{icon:'📄', name:'Copy CTA Jornada Julho', sub:'Pacote BPMF 01-07-06', path:'C:\\Users\\aleta\\OneDrive\\Documentos\\Claude\\Projects\\Projeto Área de MKT\\Semana 01-07-06-2026\\Pacote da Semana 01-07-06 - BPMF v1.0.docx'}],
+    checklist:['Criar post Canva com logo BPMF','Publicar Sex 06/06 9h IG','Enviar mensagem grupo WhatsApp BPMF'] },
+];
+
+const STATUS_META = {
+  bloqueado: { label:'🔴 Bloqueado',        cls:'status-bloqueado' },
+  pendente:  { label:'🟡 Pendente Criação', cls:'status-pendente'  },
+  aguarda:   { label:'🔵 Ag. Aprovação',    cls:'status-aguarda'   },
+  aprovado:  { label:'🟣 Aprovado',         cls:'status-aprovado'  },
+  agendado:  { label:'🩵 Agendado',         cls:'status-agendado'  },
+  publicado: { label:'🟢 Publicado',        cls:'status-publicado' },
+};
+
+function getStatus(id){ return localStorage.getItem('ops2_'+id) || TASKS.find(t=>t.id===id)?.defaultStatus || 'pendente'; }
+function saveStatus(id,v){ localStorage.setItem('ops2_'+id,v); }
+
+function _doCopy(text, btn, btnLabel) {
+  function onOk() {
+    if (btn) { btn.textContent = '✓ Copiado!'; btn.classList.add('ok','copied');
+      setTimeout(() => { btn.textContent = btnLabel || 'Copiar'; btn.classList.remove('ok','copied'); }, 2000); }
+    const t = document.getElementById('toast');
+    if (t) { t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
+  }
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(onOk).catch(() => _fbCopy(text, onOk));
+  } else { _fbCopy(text, onOk); }
+}
+function _fbCopy(text, onOk) {
+  const el = document.createElement('textarea');
+  el.value = text; el.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none;';
+  document.body.appendChild(el); el.focus(); el.select();
+  try { document.execCommand('copy'); onOk(); }
+  catch(e) { window.prompt('Copie o caminho abaixo:', text); }
+  document.body.removeChild(el);
+}
+function copyText(elId, btn){
+  const txt = document.getElementById(elId)?.textContent || elId;
+  _doCopy(txt, btn, 'Copiar Caminho');
+}
+function copyPath(path, btn){
+  _doCopy(path, btn, 'Copiar Caminho');
+}
+
+function renderCard(task){
+  const status = getStatus(task.id);
+  const meta = STATUS_META[status];
+  const uid = task.id;
+
+  const filesHtml = task.files.map((f,i)=>{
+    const eid = uid+'_f'+i;
+    return `<div class="file-box">
+      <span class="file-box-icon">${f.icon}</span>
+      <div class="file-box-info">
+        <div class="file-box-name">${f.name}</div>
+        <div class="file-box-path" id="${eid}">${f.path}</div>
+        <div class="open-hint">📋 Copie o caminho → Win+R → cole → Enter</div>
+      </div>
+      <button class="copy-btn" onclick="copyPath('${f.path.replace(/'/g,"\\'")}',this)">Copiar Caminho</button>
+    </div>`;
+  }).join('');
+
+  const slidesHtml = task.slides>0 ? `<div class="slides-pill">${task.slides} slides PNG gerados e salvos na pasta</div>` : '';
+
+  const canvaHtml = task.canva ? `<div class="canva-box">
+    <div class="canva-box-title">Editar no Canva</div>
+    <ol class="canva-steps">
+      <li>Copie o caminho da pasta de slides acima</li>
+      <li>Abra as imagens PNG no seu computador</li>
+      <li>Acesse <a href="https://canva.com" target="_blank" style="color:#c4b5fd">canva.com</a> → Criar → Post Instagram 1080×1080</li>
+      <li>Faça upload dos PNGs → use como referência e ajuste textos</li>
+    </ol>
+    <a class="canva-link" href="https://www.canva.com/create/instagram-posts/" target="_blank">Abrir Canva</a>
+  </div>` : '';
+
+  const checkHtml = task.checklist.map((item,i)=>{
+    const k='chk_'+uid+'_'+i;
+    const done=localStorage.getItem(k)==='1';
+    return `<li class="${done?'check-done':''}" id="li_${k}">
+      <input type="checkbox" id="${k}" ${done?'checked':''} onchange="toggleCheck('${k}')">
+      <label for="${k}">${item}</label>
+    </li>`;
+  }).join('');
+
+  const selectHtml = `<select class="status-select ${meta.cls}" onchange="onStatusChange('${uid}',this)">
+    ${Object.entries(STATUS_META).map(([k,v])=>`<option value="${k}" ${k===status?'selected':''}>${v.label}</option>`).join('')}
+  </select>`;
+
+  return `<div class="task-card ${status}" id="card_${uid}">
+    <div class="task-header" onclick="toggleCard('${uid}')">
+      <div class="task-header-left">
+        <div class="task-title-row">
+          <span class="task-title">${task.title}</span>
+          <span class="company-badge ${task.badge}">${task.company}</span>
+          <span class="format-tag">${task.format}</span>
+        </div>
+        <div class="task-date">${task.day} · ${task.subtitle}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;" onclick="event.stopPropagation()">
+        ${selectHtml}
+        <span style="font-size:11px;color:#718096;cursor:pointer;" onclick="toggleCard('${uid}')">▾</span>
+      </div>
+    </div>
+    <div class="task-body" id="body_${uid}">
+      <div class="next-action">
+        <div class="next-action-label">Próximo passo agora</div>
+        <div class="next-action-text">${task.nextAction}</div>
+      </div>
+      <div class="section-title">Arquivos</div>
+      ${filesHtml}
+      ${slidesHtml}
+      ${canvaHtml}
+      <div class="section-title">Checklist desta tarefa</div>
+      <ul class="checklist">${checkHtml}</ul>
+    </div>
+  </div>`;
+}
+
+function onStatusChange(id, sel){
+  const v = sel.value;
+  saveStatus(id, v);
+  const card=document.getElementById('card_'+id);
+  card.className='task-card '+v;
+  sel.className='status-select '+STATUS_META[v].cls;
+  updateDashboard();
+}
+
+function toggleCard(id){
+  document.getElementById('body_'+id).classList.toggle('open');
+}
+
+function toggleCheck(k){
+  const cb=document.getElementById(k), li=document.getElementById('li_'+k);
+  localStorage.setItem(k, cb.checked?'1':'0');
+  cb.checked ? li.classList.add('check-done') : li.classList.remove('check-done');
+}
+
+function updateDashboard(){
+  const c={bloqueado:0,pendente:0,aguarda:0,aprovado:0,agendado:0,publicado:0};
+  TASKS.forEach(t=>{ c[getStatus(t.id)]++; });
+  Object.keys(c).forEach(k=>{ const el=document.getElementById('pn-'+k); if(el) el.textContent=c[k]; });
+  const pub=c.publicado, total=TASKS.length, pct=Math.round(pub/total*100);
+  document.getElementById('progress-fill').style.width=pct+'%';
+  document.getElementById('progress-pct').textContent=pct+'%';
+  document.getElementById('progress-count').textContent=pub+' de '+total+' tarefas publicadas';
+  rebuildSchedule();
+}
+
+function rebuildSchedule(){
+  const tbody=document.getElementById('schedule-tbody');
+  if(!tbody) return;
+  const sorted=[...TASKS].sort((a,b)=>a.daySort-b.daySort);
+  tbody.innerHTML=sorted.map(t=>{
+    const s=getStatus(t.id), m=STATUS_META[s];
+    return `<tr>
+      <td style="color:#a0aec0;white-space:nowrap;">${t.day}</td>
+      <td><span class="company-badge ${t.badge}">${t.company}</span></td>
+      <td><span class="format-tag">${t.format}</span></td>
+      <td style="color:#e2e8f0;">${t.title}</td>
+      <td><span style="font-size:12px;">${m.label}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function switchTab(name, el){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(el) el.classList.add('active');
+}
+
+// INIT
+function filterSemana(sem) {
+  const allTasks = TASKS.filter(t => t.company === 'ADFly');
+  const filtered = sem === 'all' ? allTasks : allTasks.filter(t => t.semana === sem);
+  document.getElementById('tasks-adfly').innerHTML = filtered.map(renderCard).join('');
+  // Update button styles
+  ['all','s1','s2','s3'].forEach(id => {
+    const btn = document.getElementById('f-' + id);
+    if (!btn) return;
+    const isActive = (id === 'all' && sem === 'all') || (id === 's1' && sem === 'Semana 1') || (id === 's2' && sem === 'Semana 2') || (id === 's3' && sem === 'Semana 3');
+    btn.style.background = isActive ? '#00D4FF' : 'transparent';
+    btn.style.color = isActive ? '#0a0a0c' : '#94a3b8';
+    btn.style.fontWeight = isActive ? '700' : '400';
+  });
+  // Re-init checkboxes
+  document.querySelectorAll('#tasks-adfly .check-box').forEach(cb => {
+    const key = cb.dataset.key;
+    if (localStorage.getItem('chk_' + key) === 'done') cb.classList.add('done');
+    cb.onclick = () => { cb.classList.toggle('done'); localStorage.setItem('chk_' + key, cb.classList.contains('done') ? 'done' : ''); updateProgress(); };
+  });
+  updateProgress();
+}
+document.getElementById('tasks-adfly').innerHTML   = TASKS.filter(t=>t.company==='ADFly').map(renderCard).join('');
+document.getElementById('tasks-alechef').innerHTML = TASKS.filter(t=>t.company==='AleChef').map(renderCard).join('');
+document.getElementById('tasks-bpmf').innerHTML    = TASKS.filter(t=>t.company==='BPMF').map(renderCard).join('');
+updateDashboard();
+</script>
+</body>
+</html>
